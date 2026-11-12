@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1d16">
+<title>Бой у совхоза «Войсковицы» — 20.08.1941</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.0.8/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/pt-sans@5.0.8/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/pt-sans@5.0.8/700.css">
+<style>
+:root{
+  --bg:#171a13; --panel:#22271b; --panel2:#2c3323; --line:#3d4530;
+  --paper:#d8ceac; --ink:#33321f;
+  --txt:#e9e5d4; --mut:#a9ab93;
+  --red:#c0392b; --blue:#3b62a8; --amber:#e8b44a; --green:#8aa35a;
+  --sh:0 4px 18px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{font-family:'PT Sans',system-ui,-apple-system,sans-serif;color:var(--txt);
+  -webkit-user-select:none;user-select:none;position:fixed;inset:0}
+
+.app{position:fixed;inset:0;display:flex;flex-direction:column;height:100dvh;min-height:100dvh}
+
+/* ---------- HEADER ---------- */
+header{flex:0 0 auto;padding:calc(env(safe-area-inset-top) + 7px) 12px 7px;
+  background:linear-gradient(180deg,#2f3624,#1d2216);border-bottom:1px solid var(--line);
+  box-shadow:0 2px 12px rgba(0,0,0,.5);position:relative;z-index:5}
+.tag{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.22em;color:var(--amber);
+  text-transform:uppercase;opacity:.9}
+h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:clamp(15px,4.6vw,20px);
+  letter-spacing:.045em;margin:1px 0 2px;text-transform:uppercase;line-height:1.05;
+  text-shadow:0 1px 2px #000}
+.sub{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--mut);letter-spacing:.02em;flex-wrap:wrap}
+.sub .dot{width:3px;height:3px;border-radius:50%;background:var(--mut);opacity:.7;flex:0 0 auto}
+.sub b{color:#cfcbaf;font-weight:700}
+
+/* ---------- MAP ---------- */
+.stage-wrap{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 30%,#3a3f2c 0%,#22261a 60%,#171a13 100%);
+  touch-action:none}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* HUD поверх карты */
+.hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:8px;padding:9px 10px;pointer-events:none;z-index:3}
+.hud-box{background:rgba(20,24,15,.78);border:1px solid rgba(232,180,74,.32);
+  border-radius:7px;padding:4px 9px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.hud-lbl{font-family:'Oswald',sans-serif;font-size:8px;letter-spacing:.16em;color:var(--amber);
+  text-transform:uppercase;opacity:.85;display:block;line-height:1}
+.hud-val{font-family:'Oswald',sans-serif;font-size:19px;font-weight:500;letter-spacing:.05em;line-height:1.15}
+.hud-val small{font-size:11px;color:var(--mut);font-weight:400}
+.kills b{color:#ff8f6a}
+
+/* сводка */
+.brief{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,rgba(18,22,13,.86),rgba(18,22,13,.95));
+  border:1px solid rgba(232,180,74,.28);border-left:3px solid var(--amber);
+  border-radius:8px;padding:7px 10px 8px;box-shadow:var(--sh);
+  transition:opacity .35s}
+.brief-t{font-family:'Oswald',sans-serif;font-size:8.5px;letter-spacing:.2em;color:var(--amber);
+  text-transform:uppercase;display:block;margin-bottom:2px}
+.brief p{margin:0;font-size:12.5px;line-height:1.35;color:#e6e2cd}
+.brief p b{color:#ffd98a}
+.brief.flash{animation:bflash .5s ease}
+@keyframes bflash{0%{background-color:rgba(120,80,20,.55)}100%{background-color:transparent}}
+
+/* подсказка старта */
+.hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:4;pointer-events:none;transition:opacity .5s}
+.hint div{background:rgba(15,18,11,.86);border:1px solid rgba(232,180,74,.4);border-radius:12px;
+  padding:14px 18px;max-width:78%;text-align:center;box-shadow:var(--sh);animation:pulse 2.2s infinite}
+.hint span{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.06em;color:var(--amber);
+  display:block;margin-bottom:4px}
+.hint em{font-style:normal;font-size:11.5px;color:#cfcbb4;line-height:1.4;display:block}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+.hidden{opacity:0!important;pointer-events:none!important}
+
+/* ---------- ПУЛЬТ ---------- */
+footer{flex:0 0 auto;background:linear-gradient(180deg,#262c1d,#1b1f14);
+  border-top:1px solid var(--line);padding:8px 10px calc(env(safe-area-inset-bottom) + 9px);
+  box-shadow:0 -4px 18px rgba(0,0,0,.5);z-index:6}
+.scrub{position:relative;height:26px;display:flex;align-items:center;margin-bottom:7px}
+.ticks{position:absolute;left:2px;right:2px;top:4px;height:5px;pointer-events:none}
+.ticks i{position:absolute;top:0;width:1px;height:5px;background:rgba(232,180,74,.45)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;
+  background:linear-gradient(90deg,var(--amber) var(--p,0%),#4a5138 var(--p,0%));border:1px solid #14170f}
+input[type=range]::-moz-range-track{height:5px;border-radius:3px;background:#4a5138}
+input[type=range]::-moz-range-progress{height:5px;border-radius:3px;background:var(--amber)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffe6a8,#d99b28);border:2px solid #1b1f14;
+  margin-top:-9px;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffe6a8,#d99b28);border:2px solid #1b1f14}
+
+.btns{display:flex;gap:7px;align-items:stretch}
+.btn{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.08em;
+  background:linear-gradient(180deg,#39412b,#282e1d);color:var(--txt);
+  border:1px solid #4d5639;border-radius:9px;padding:0;min-height:46px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  font-size:10px;cursor:pointer;transition:transform .1s,background .2s,border-color .2s;
+  box-shadow:0 2px 0 rgba(0,0,0,.35);flex:0 0 auto;width:52px}
+.btn .ico{font-size:17px;line-height:1;transition:transform .3s}
+.btn:active{transform:translateY(2px);box-shadow:none;background:#20261a}
+.btn.on{border-color:var(--amber);color:var(--amber)}
+.btn-play{flex:1 1 auto;background:linear-gradient(180deg,#8e2f22,#63201a);border-color:#b04a34;
+  font-size:13px;letter-spacing:.14em;color:#ffe9d8;min-width:0}
+.btn-play:active{background:#5a1c16}
+.btn-play.playing{background:linear-gradient(180deg,#a8701f,#7a4f13);border-color:#d59a34}
+.btn small{font-size:8px;letter-spacing:.06em;color:var(--mut);text-transform:none;font-family:'PT Sans',sans-serif}
+.btn-play small{color:rgba(255,230,210,.65)}
+
+/* ---------- ЛИСТ УСЛОВНЫХ ЗНАКОВ ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(8,10,6,.6);opacity:0;pointer-events:none;
+  transition:opacity .3s;z-index:20;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:linear-gradient(180deg,#2b3222,#1e2317);
+  border-top:2px solid var(--amber);border-radius:16px 16px 0 0;transform:translateY(105%);
+  transition:transform .38s cubic-bezier(.32,.72,.35,1);max-height:78dvh;display:flex;flex-direction:column;
+  box-shadow:0 -10px 40px rgba(0,0,0,.6)}
+.sheet.show{transform:translateY(0)}
+.grab{width:42px;height:4px;border-radius:2px;background:#5a6247;margin:9px auto 4px;flex:0 0 auto}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 9px;
+  border-bottom:1px solid var(--line);flex:0 0 auto}
+.sheet-h h2{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;margin:0;
+  text-transform:uppercase;color:var(--amber);font-weight:500}
+.x{background:none;border:1px solid #4d5639;color:var(--txt);width:32px;height:32px;border-radius:8px;
+  font-size:15px;line-height:1;cursor:pointer}
+.sheet-b{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom) + 18px)}
+.leg{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.09)}
+.leg:last-of-type{border-bottom:none}
+.leg .ic{flex:0 0 auto;width:48px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:#d8ceac;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+.leg .tx b{display:block;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;color:#f0ecd9;font-weight:400}
+.leg .tx span{display:block;font-size:11px;color:var(--mut);line-height:1.3;margin-top:1px}
+.note{margin-top:14px;padding:10px 12px;background:rgba(0,0,0,.25);border-left:2px solid var(--green);
+  border-radius:6px;font-size:11px;color:#b6b79e;line-height:1.45}
+
+/* ---------- ОРИЕНТАЦИЯ ---------- */
+.rot-hint{position:fixed;inset:0;z-index:99;background:#14170f;display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+.rot-hint .ph{width:44px;height:74px;border:3px solid var(--amber);border-radius:8px;
+  animation:turn 2s ease-in-out infinite}
+@keyframes turn{0%,100%{transform:rotate(90deg)}45%,60%{transform:rotate(0)}}
+.rot-hint p{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--amber);
+  text-transform:uppercase;margin:0}
+.rot-hint em{font-style:normal;font-size:12px;color:var(--mut)}
+@media (orientation:landscape) and (max-height:520px){.rot-hint{display:flex}}
+@media (max-height:600px){
+  h1{font-size:14px}.sub{font-size:9.5px}.brief p{font-size:11.5px}
+  .btn{min-height:42px;width:46px}.btn-play{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="tag">Штабная карта-реконструкция · схема повёрнута на 90°</div>
+    <h1>Бой у совхоза «Войсковицы»</h1>
+    <div class="sub">
+      <span><b>20 августа 1941 г.</b></span><span class="dot"></span>
+      <span>точка боя 59°32′37″N 29°55′32″E</span>
+    </div>
+  </header>
+
+  <main class="stage-wrap" id="stageWrap">
+    <svg id="stage" viewBox="0 0 720 1000" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <pattern id="pForest" width="34" height="34" patternUnits="userSpaceOnUse">
+          <rect width="34" height="34" fill="#b3c396"/>
+          <g stroke="#54693d" stroke-width="1.7" fill="none" stroke-linecap="round">
+            <path d="M9 24V11M9 11l-4 5M9 11l4 5M9 17l-3 4M9 17l3 4"/>
+            <path d="M26 33V20M26 20l-4 5M26 20l4 5M26 26l-3 4M26 26l3 4"/>
+          </g>
+        </pattern>
+        <pattern id="pMeadow" width="26" height="26" patternUnits="userSpaceOnUse">
+          <rect width="26" height="26" fill="#ccd4a2"/>
+          <g stroke="#8d9b64" stroke-width="1.1" stroke-linecap="round">
+            <path d="M5 20l2-6M9 21l1-4M17 9l2-6M21 10l1-4"/>
+          </g>
+          <circle cx="14" cy="18" r="1" fill="#8d9b64" opacity=".7"/>
+        </pattern>
+        <pattern id="pSwamp" width="30" height="30" patternUnits="userSpaceOnUse">
+          <rect width="30" height="30" fill="#a6c0b9"/>
+          <g stroke="#4c7a72" stroke-width="1.5" stroke-linecap="round" fill="none">
+            <path d="M3 11h9M16 21h9M7 26h7"/>
+            <path d="M22 5l-2.5 7M22 5l2.5 7M22 5v8"/>
+          </g>
+        </pattern>
+        <filter id="grain" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+          <feColorMatrix type="saturate" values="0"/>
+        </filter>
+        <filter id="glow" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="3.2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softsh" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="1.5" dy="2" stdDeviation="1.6" flood-color="#2a2416" flood-opacity=".55"/>
+        </filter>
+
+        <!-- Pz.Kpfw.35(t) -->
+        <g id="tz-pz">
+          <rect x="-16" y="-11.5" width="32" height="6" rx="2.6" fill="#1e2b45"/>
+          <rect x="-16" y="5.5" width="32" height="6" rx="2.6" fill="#1e2b45"/>
+          <rect x="-13" y="-7" width="26" height="14" rx="2" fill="#3b62a8" stroke="#16233c" stroke-width="1.5"/>
+          <circle cx="-1" cy="0" r="5.6" fill="#4d78c4" stroke="#16233c" stroke-width="1.5"/>
+          <rect x="4" y="-1.5" width="17" height="3" fill="#16233c"/>
+        </g>
+        <!-- КВ-1 -->
+        <g id="tz-kv">
+          <rect x="-21" y="-14" width="42" height="7.5" rx="3.2" fill="#4a1512"/>
+          <rect x="-21" y="6.5" width="42" height="7.5" rx="3.2" fill="#4a1512"/>
+          <rect x="-17" y="-9.5" width="34" height="19" rx="2.5" fill="#a72b21" stroke="#3a0f0b" stroke-width="1.9"/>
+          <rect x="-6" y="-7" width="14" height="14" rx="2" fill="#c33a2c" stroke="#3a0f0b" stroke-width="1.7"/>
+          <rect x="8" y="-2" width="24" height="4" fill="#3a0f0b"/>
+        </g>
+        <g id="tz-hit" stroke="#22180e" stroke-width="3.2" stroke-linecap="round" opacity=".92">
+          <path d="M-11,-11 L11,11 M11,-11 L-11,11"/>
+        </g>
+        <g id="tz-flame">
+          <path d="M0,-14 C6,-7 9.5,-3.5 9.5,2.5 A9.5,9.5 0 0 1 -9.5,2.5 C-9.5,-3.5 -6,-7 0,-14Z" fill="#ff7b18"/>
+          <path d="M0,-7 C3.4,-3 5.2,-1 5.2,2.8 A5.2,5.2 0 0 1 -5.2,2.8 C-5.2,-1 -3.4,-3 0,-7Z" fill="#ffe14a"/>
+        </g>
+        <g id="tz-flash">
+          <circle r="7" fill="#ffcf4d" opacity=".85"/>
+          <path d="M0,-3 L20,-8 L13,0 L20,8 Z" fill="#ffe9a8"/>
+        </g>
+        <g id="tz-stack">
+          <path d="M-8,4 C-8,-5 -4,-9 0,-9 C4,-9 8,-5 8,4 Z" fill="#c9a55c" stroke="#6d5322" stroke-width="1.3"/>
+          <path d="M-5,4 V-3 M0,4 V-7 M5,4 V-3" stroke="#8b6c2e" stroke-width="1"/>
+        </g>
+        <g id="tz-bush">
+          <circle cx="-6" cy="0" r="7" fill="#8ba06a" stroke="#54693d" stroke-width="1.2"/>
+          <circle cx="6" cy="2" r="6" fill="#8ba06a" stroke="#54693d" stroke-width="1.2"/>
+          <circle cx="0" cy="-6" r="6" fill="#96ab74" stroke="#54693d" stroke-width="1.2"/>
+        </g>
+      </defs>
+
+      <g id="mapRoot">
+        <!-- основа -->
+        <rect x="-300" y="-300" width="1320" height="1600" fill="#d8ceac"/>
+        <g id="grid"></g>
+
+        <!-- заболоченный луг -->
+        <path d="M720,224 L720,1000 H146 C228,930 298,858 356,778 C414,698 466,616 516,528
+                 C576,424 638,324 720,224 Z" fill="url(#pMeadow)" stroke="#8d9b64" stroke-width="1.4"/>
+        <!-- болото -->
+        <path d="M618,510 C692,520 716,580 706,650 C696,724 636,768 568,752
+                 C506,738 484,680 502,622 C518,572 562,502 618,510 Z"
+              fill="url(#pSwamp)" stroke="#4c7a72" stroke-width="1.8"/>
+        <text x="606" y="640" text-anchor="middle" font-family="Oswald,sans-serif" font-size="17"
+              letter-spacing="4" fill="#2c5149" opacity=".85">БОЛОТО</text>
+        <!-- лес -->
+        <path d="M0,0 H560 L516,74 C470,140 428,182 380,250 C332,320 282,362 222,432
+                 C172,492 122,548 92,622 C66,692 46,762 22,832 L0,832 Z"
+              fill="url(#pForest)" stroke="#54693d" stroke-width="2"/>
+        <text x="150" y="200" font-family="Oswald,sans-serif" font-size="19" letter-spacing="6"
+              fill="#3d5230" opacity=".8">ЛЕС</text>
+
+        <!-- грунтовая дорога -->
+        <path d="M150,782 C210,770 240,760 268,742" fill="none" stroke="#a08a5c"
+              stroke-width="5" stroke-dasharray="9 6" opacity=".85"/>
+
+        <!-- шоссе -->
+        <path id="road" d="M706,10 C660,110 606,200 556,290 C506,376 452,456 398,536
+                 C342,620 288,704 228,786 C172,862 110,926 24,988"
+              fill="none" stroke="#6f6a4e" stroke-width="15" stroke-linecap="round"/>
+        <path d="M706,10 C660,110 606,200 556,290 C506,376 452,456 398,536
+                 C342,620 288,704 228,786 C172,862 110,926 24,988"
+              fill="none" stroke="#b8ae8b" stroke-width="9" stroke-linecap="round"/>
+        <path d="M706,10 C660,110 606,200 556,290 C506,376 452,456 398,536
+                 C342,620 288,704 228,786 C172,862 110,926 24,988"
+              fill="none" stroke="#8a8362" stroke-width="1.6" stroke-dasharray="12 10" opacity=".8"/>
+        <text x="512" y="330" transform="rotate(-58 512 330)" font-family="Oswald,sans-serif"
+              font-size="13" letter-spacing="3" fill="#5c5638">ШОССЕ</text>
+
+        <!-- стога сена -->
+        <g id="stacks">
+          <use href="#tz-stack" x="352" y="862"/>
+          <use href="#tz-stack" x="420" y="906"/>
+          <use href="#tz-stack" x="300" y="936"/>
+          <use href="#tz-stack" x="474" y="846"/>
+          <use href="#tz-stack" x="548" y="892"/>
+          <use href="#tz-stack" x="392" y="962"/>
+        </g>
+        <text x="430" y="998" font-family="Oswald,sans-serif" font-size="12" letter-spacing="2"
+              fill="#6d5322" opacity=".9">СТОГА СЕНА</text>
+
+        <!-- совхоз -->
+        <g filter="url(#softsh)">
+          <rect x="130" y="762" width="36" height="21" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
+          <rect x="176" y="753" width="27" height="17" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
+          <rect x="138" y="797" width="46" height="17" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
+          <rect x="196" y="784" width="21" height="25" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
+          <rect x="110" y="800" width="19" height="14" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
+        </g>
+        <g transform="translate(228,726)">
+          <path d="M0,-9 L8,5 H-8 Z" fill="#c0392b" stroke="#3a0f0b" stroke-width="1.4"/>
+          <text x="0" y="3.4" text-anchor="middle" font-family="Oswald,sans-serif" font-size="8"
+                fill="#fff" font-weight="500">С</text>
+        </g>
+        <text x="104" y="748" font-family="Oswald,sans-serif" font-size="14" letter-spacing="1.5"
+              fill="#4a3a24">СОВХОЗ «ВОЙСКОВИЦЫ»</text>
+
+        <!-- кустарник у кромки леса -->
+        <use href="#tz-bush" x="168" y="668" opacity=".9"/>
+        <use href="#tz-bush" x="112" y="726" opacity=".9"/>
+        <use href="#tz-bush" x="196" y="704" opacity=".8"/>
+
+        <!-- сектор обстрела -->
+        <path d="M125,690 L268,700 L246,800 Z" fill="#c0392b" opacity=".07"
+              stroke="#c0392b" stroke-width="1.2" stroke-dasharray="6 5" opacity=".5"/>
+
+        <!-- точка боя -->
+        <g id="battlePoint" transform="translate(255,747)">
+          <circle r="19" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-dasharray="5 4"/>
+          <circle r="3.4" fill="#c0392b"/>
+          <path d="M-27,0 H-11 M11,0 H27 M0,-27 V-11 M0,11 V27" stroke="#c0392b" stroke-width="1.8"/>
+        </g>
+        <path d="M272,738 L318,706" stroke="#7a3a2c" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="322" y="700" font-family="Oswald,sans-serif" font-size="13" letter-spacing="1.5"
+              fill="#8a2f22">ТОЧКА БОЯ</text>
+        <text x="322" y="716" font-family="PT Sans,sans-serif" font-size="11" fill="#6b5a3c">
+          59°32′37″N 29°55′32″E</text>
+
+        <!-- единицы -->
+        <g id="units"></g>
+        <!-- эффекты -->
+        <g id="fx"></g>
+
+        <!-- КВ-1 №864 -->
+        <g id="kv" transform="translate(125,690) rotate(22)">
+          <use href="#tz-kv" filter="url(#softsh)"/>
+        </g>
+        <path d="M108,676 L64,646" stroke="#8a2f22" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="14" y="640" font-family="Oswald,sans-serif" font-size="14" letter-spacing="1"
+              fill="#8a2f22">КВ-1 №864</text>
+        <text x="14" y="656" font-family="PT Sans,sans-serif" font-size="11.5" fill="#7d3a2c">
+          засада у кромки леса</text>
+
+        <!-- компас -->
+        <g id="compass" transform="translate(648,92)">
+          <circle r="27" fill="rgba(216,206,172,.75)" stroke="#6b6545" stroke-width="1.4"/>
+          <path d="M0,-21 L7,4 L0,-1 L-7,4 Z" fill="#c0392b" stroke="#3a0f0b" stroke-width="1"/>
+          <path d="M0,21 L7,-4 L0,1 L-7,-4 Z" fill="#4a4a3a" opacity=".7"/>
+          <text x="0" y="-27" text-anchor="middle" font-family="Oswald,sans-serif" font-size="13"
+                fill="#3a3a28">С</text>
+        </g>
+        <!-- масштаб -->
+        <g transform="translate(560,962)">
+          <rect x="0" y="0" width="120" height="7" fill="#3a3a28"/>
+          <rect x="0" y="0" width="40" height="7" fill="#d8ceac" stroke="#3a3a28" stroke-width="1"/>
+          <rect x="80" y="0" width="40" height="7" fill="#d8ceac" stroke="#3a3a28" stroke-width="1"/>
+          <text x="0" y="-6" font-family="Oswald,sans-serif" font-size="12" fill="#3a3a28">0</text>
+          <text x="104" y="-6" font-family="Oswald,sans-serif" font-size="12" fill="#3a3a28">500 м</text>
+        </g>
+
+        <rect x="-300" y="-300" width="1320" height="1600" filter="url(#grain)" opacity=".13"
+              style="mix-blend-mode:multiply;pointer-events:none"/>
+      </g>
+    </svg>
+
+    <div class="hud">
+      <div class="hud-box">
+        <span class="hud-lbl">Время</span>
+        <span class="hud-val" id="clock">14:00</span>
+      </div>
+      <div class="hud-box kills" style="text-align:right">
+        <span class="hud-lbl">Подбито</span>
+        <span class="hud-val"><b id="kills">0</b> <small>/ 22</small></span>
+      </div>
+    </div>
+
+    <div class="brief" id="brief">
+      <span class="brief-t">Сводка боя</span>
+      <p id="briefText">14:00 — Колонна Pz.Kpfw.35(t) выходит на шоссе. КВ-1 №864 занимает засаду у кромки леса, двигатель заглушён.</p>
+    </div>
+
+    <div class="hint" id="hint">
+      <div>
+        <span>▶ РЕКОНСТРУКЦИЯ БОЯ</span>
+        <em>Нажмите «Бой» — схема будет восстановлена по хронологии источников</em>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="scrub">
+      <div class="ticks" id="ticks"></div>
+      <input type="range" id="scrub2" min="0" max="48" step="0.05" value="0" aria-label="Хронология боя">
+    </div>
+    <div class="btns">
+      <button class="btn" id="bReset" aria-label="Сброс"><span class="ico">⟲</span><small>сброс</small></button>
+      <button class="btn btn-play" id="bPlay"><span class="ico" id="playIco">▶</span>БОЙ<small id="playSub">начать реконструкцию</small></button>
+      <button class="btn" id="bRot" aria-label="Поворот на 90°"><span class="ico">⟳</span><small>90°</small></button>
+      <button class="btn" id="bZoom" aria-label="Точка боя"><span class="ico">⊕</span><small>фокус</small></button>
+      <button class="btn" id="bLeg" aria-label="Условные знаки"><span class="ico">☰</span><small>знаки</small></button>
+    </div>
+  </footer>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <div class="sheet-h">
+    <h2>Условные знаки</h2>
+    <button class="x" id="sheetX">✕</button>
+  </div>
+  <div class="sheet-b">
+    <div class="leg"><div class="ic"><svg width="44" height="30" viewBox="-22 -15 44 30"><use href="#tz-kv"/></svg></div>
+      <div class="tx"><b>КВ-1 №864</b><span>советский тяжёлый танк в засаде, сектор обстрела — шоссе</span></div></div>
+    <div class="leg"><div class="ic"><svg width="40" height="28" viewBox="-20 -14 40 28"><use href="#tz-pz"/></svg></div>
+      <div class="tx"><b>Pz.Kpfw.35(t)</b><span>танки противника в походной колонне, 22 машины</span></div></div>
+    <div class="leg"><div class="ic"><svg width="40" height="30" viewBox="-20 -15 40 30"><g opacity=".45"><use href="#tz-pz"/></g><use href="#tz-hit"/><g transform="translate(6,-8) scale(.55)"><use href="#tz-flame"/></g></svg></div>
+      <div class="tx"><b>Танк подбит + вспышка</b><span>крест — машина уничтожена, огонь и дым на месте поражения</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><path d="M2,20 C12,8 22,26 44,10" fill="none" stroke="#6f6a4e" stroke-width="7"/><path d="M2,20 C12,8 22,26 44,10" fill="none" stroke="#b8ae8b" stroke-width="4"/></svg></div>
+      <div class="tx"><b>Шоссе</b><span>дорога с твёрдым покрытием — ось движения колонны</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><rect width="46" height="30" fill="url(#pSwampS)"/><rect width="46" height="30" fill="#a6c0b9"/><g stroke="#4c7a72" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M4 10h9M20 20h9M10 25h7"/><path d="M32 6l-2.5 7M32 6l2.5 7M32 6v8"/><path d="M14 4l-2 6M14 4l2 6"/></g></svg></div>
+      <div class="tx"><b>Болото</b><span>непроходимо для техники, ограничивает манёвр колонны справа</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><rect width="46" height="30" fill="#b3c396"/><g stroke="#54693d" stroke-width="1.7" fill="none" stroke-linecap="round"><path d="M12 24V11M12 11l-4 5M12 11l4 5M12 17l-3 4M12 17l3 4"/><path d="M33 26V14M33 14l-4 5M33 14l4 5"/></g></svg></div>
+      <div class="tx"><b>Лес</b><span>маскировка позиции КВ-1, слева от шоссе</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><rect width="46" height="30" fill="#ccd4a2"/><g stroke="#8d9b64" stroke-width="1.1" stroke-linecap="round"><path d="M8 22l2-6M13 23l1-4M30 12l2-6M35 13l1-4"/></g></svg></div>
+      <div class="tx"><b>Заболоченный луг</b><span>вязкий грунт — попытка обхода засады вне шоссе</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><rect width="46" height="30" fill="#ccd4a2"/><use href="#tz-stack" x="14" y="20"/><use href="#tz-stack" x="33" y="18"/></svg></div>
+      <div class="tx"><b>Стога сена</b><span>ориентиры на лугу, ограничивают обзор и проход</span></div></div>
+    <div class="leg"><div class="ic"><svg width="46" height="30" viewBox="0 0 46 30"><rect width="46" height="30" fill="#d8ceac"/><g transform="translate(23,15)"><circle r="9" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-dasharray="4 3"/><circle r="1.8" fill="#c0392b"/><path d="M-14,0H-5M5,0H14M0,-14V-5M0,5V14" stroke="#c0392b" stroke-width="1.6"/></g></svg></div>
+      <div class="tx"><b>Точка боя</b><span>59°32′37″N 29°55′32″E — центр схемы-реконструкции</span></div></div>
+    <div class="note">Схема-реконструкция выполнена по хронологии доступных источников и носит иллюстративный характер: положение машин, интервалы и темп боя схематичны. Кнопка <b>⟳</b> поворачивает лист на 90°, <b>⊕</b> — наводит фокус на точку боя (карту можно двигать пальцем).</div>
+  </div>
+</div>
+
+<div class="rot-hint">
+  <div class="ph"></div>
+  <p>Поверните телефон вертикально</p>
+  <em>Схема-реконструкция рассчитана на книжную ориентацию экрана</em>
+</div>
+
+<script>
+(function(){
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+/* ================= КАРКАС ================= */
+const stage=$('stage'), mapRoot=$('mapRoot'), units=$('units'), fx=$('fx'), road=$('road');
+const roadLen=road.getTotalLength();
+const N=22, END=48, RATE=1.75;      // сим-минут в секунду
+
+function nearestLen(x,y){let b=0,d=1e18;for(let L=0;L<=roadLen;L+=3){const p=road.getPointAtLength(L);
+  const q=(p.x-x)**2+(p.y-y)**2;if(q<d){d=q;b=L;}}return b;}
+const KILL=nearestLen(255,747);
+const KV={x:125,y:690,a:22};
+
+function roadAt(L,off){
+  const l=Math.max(0,Math.min(roadLen,L));
+  const p=road.getPointAtLength(l);
+  const p2=road.getPointAtLength(Math.min(roadLen,l+3));
+  let dx=p2.x-p.x, dy=p2.y-p.y; const m=Math.hypot(dx,dy)||1; dx/=m; dy/=m;
+  return {x:p.x+dy*(off||0), y:p.y-dx*(off||0), a:Math.atan2(dy,dx)*180/Math.PI};
+}
+
+/* ---------- сетка координат ---------- */
+(function grid(){
+  const g=$('grid');
+  for(let x=0;x<=720;x+=90){g.appendChild(mk('line',{x1:x,y1:0,x2:x,y2:1000,stroke:'#7d7a52','stroke-width':.7,opacity:.35}));}
+  for(let y=0;y<=1000;y+=90){g.appendChild(mk('line',{x1:0,y1:y,x2:720,y2:y,stroke:'#7d7a52','stroke-width':.7,opacity:.35}));}
+  for(let x=90;x<720;x+=180){const t=mk('text',{x:x+4,y:14,'font-family':'Oswald,sans-serif','font-size':10,fill:'#6d6a45'});
+    t.textContent='29°'+(52+Math.round(x/180))+'′';g.appendChild(t);}
+  for(let y=180;y<1000;y+=180){const t=mk('text',{x:5,y:y-4,'font-family':'Oswald,sans-serif','font-size':10,fill:'#6d6a45'});
+    t.textContent='59°'+(35-Math.round(y/180))+'′';g.appendChild(t);}
+})();
+
+/* ---------- танки ---------- */
+const DETOUR=[4,5,6,7];
+const tanks=[];
+for(let i=0;i<N;i++){
+  const g=mk('g',{class:'tank'});
+  const body=mk('use',{href:'#tz-pz'});
+  const hit=mk('use',{href:'#tz-hit',class:'hitm'});
+  hit.style.display='none';
+  g.appendChild(body);g.appendChild(hit);
+  units.appendChild(g);
+  tanks.push({g:g,body:body,hit:hit,dead:false,len:0,off:0,a:0,x:0,y:0});
+}
+const kvEl=$('kv');
+
+/* ================= ХРОНОЛОГИЯ ================= */
+const DESTROY=[
+ {t:6.4,i:[0]},{t:8.2,i:[1]},{t:9.6,i:[2]},{t:12.4,i:[3,4]},{t:15.2,i:[5]},
+ {t:17.8,i:[6,7]},{t:21.4,i:[8,9]},{t:24.6,i:[10]},{t:27.4,i:[11,12]},
+ {t:30.6,i:[13,14]},{t:33.4,i:[15]},{t:35.8,i:[16,17]},{t:38.2,i:[18]},
+ {t:40.4,i:[19,20]},{t:42.2,i:[21]}
+];
+const BRIEF=[
+ {t:0,   x:'<b>14:00</b> — Колонна Pz.Kpfw.35(t) (22 машины) выдвигается по шоссе к совхозу «Войсковицы». КВ-1 №864 в засаде у кромки леса, двигатель заглушён.'},
+ {t:3.4, x:'<b>14:03</b> — Головной дозор противника входит в зону засады у поворота шоссе. Дистанция сокращается до 700 м.'},
+ {t:6.3, x:'<b>14:06</b> — Первый выстрел КВ-1. Головной Pz.Kpfw.35(t) подбит, колонна остановлена — проезд закрыт горящими машинами.'},
+ {t:9.4, x:'<b>14:09</b> — Огонь ведётся по бортам: манёвр на узкой дамбе невозможен, слева лес, справа заболоченный луг.'},
+ {t:12.3,x:'<b>14:12</b> — Часть танков сходит с шоссе на луг, пытаясь обойти засаду справа и выйти во фланг.'},
+ {t:16.2,x:'<b>14:16</b> — КВ-1 №864 меняет позицию, разворачивает башню и поражает обходящую группу.'},
+ {t:21.3,x:'<b>21</b> — Противник подтягивает 37-мм ПАК и ведёт ответный огонь; снаряды не пробивают броню КВ.'},
+ {t:27.3,x:'<b>14:27</b> — Бой на истощение. Боекомплект КВ расходуется, но позиция удерживается.'},
+ {t:33.3,x:'<b>14:33</b> — Остатки колонны теряют управление, машины скучиваются на шоссе.'},
+ {t:40.3,x:'<b>14:40</b> — Последние Pz.Kpfw.35(t) подбиты; обходная группа увязла в заболоченном лугу.'},
+ {t:42.3,x:'<b>14:42</b> — Бой завершён. Колонна уничтожена: <b>22 танка</b> противника.'},
+ {t:45,  x:'<b>14:45</b> — КВ-1 №864, израсходовав боекомплект, отходит в расположение части. Потерь экипаж не имеет.'}
+];
+const DESTROY_MAP={};DESTROY.forEach(d=>d.i.forEach(i=>DESTROY_MAP[i]=d.t));
+
+/* ================= СОСТОЯНИЕ ================= */
+let T=0, playing=false, raf=null, lastTs=0, rotDeg=0, rotScale=1, zoomed=false;
+let vb={x:0,y:0,w:720,h:1000};
+const briefEl=$('brief'), briefTx=$('briefText'), clockEl=$('clock'), killsEl=$('kills');
+const scrub=$('scrub2'), hint=$('hint');
+let lastBrief=-1;
+
+function advanceAt(t){
+  const start=KILL-110;
+  if(t<=4) return start+(KILL-start)*(t/4);
+  return KILL;
+}
+function spacingAt(t){
+  if(t<=4) return 46;
+  return 46+(34-46)*Math.min(1,(t-4)/9);
+}
+function posOf(i,t){
+  const L=advanceAt(t)-i*spacingAt(t);
+  let off=0;
+  if(DETOUR.indexOf(i)>=0 && t>12.6 && (DESTROY_MAP[i]===undefined||t<DESTROY_MAP[i])){
+    off=Math.min(58,(t-12.6)*7);
+  }
+  return roadAt(L,off);
+}
+function isDead(i,t){return DESTROY_MAP[i]!==undefined&&DESTROY_MAP[i]<=t;}
+function killsAt(t){let n=0;DESTROY.forEach(d=>{if(d.t<=t)n+=d.i.length;});return n;}
+
+/* ================= ОТРИСОВКА ================= */
+function render(){
+  const kills=killsAt(T);
+  killsEl.textContent=kills;
+  const mins=Math.floor(T);
+  clockEl.textContent='14:'+String(mins).padStart(2,'0');
+  scrub.value=T;
+  scrub.style.setProperty('--p',(T/END*100)+'%');
+
+  for(let i=0;i<N;i++){
+    const tk=tanks[i];
+    let t;
+    if(isDead(i,T)){ t=DESTROY_MAP[i]; } else { t=T; }
+    const p=posOf(i,t);
+    const vis=p.x>-40&&p.x<760&&p.y>-40&&p.y<1040;
+    tk.g.style.display=vis?'':'none';
+    tk.g.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+') rotate('+p.a.toFixed(1)+')');
+    const dead=isDead(i,T);
+    tk.body.style.filter=dead?'brightness(.34) saturate(.45) sepia(.5)':'';
+    tk.hit.style.display=dead?'':'none';
+  }
+
+  // КВ-1 отходит в конце
+  let kvx=KV.x,kvy=KV.y,kvo=1;
+  if(T>45){const k=Math.min(1,(T-45)/3);kvx=KV.x-38*k;kvy=KV.y-46*k;kvo=1-.35*k;}
+  kvEl.setAttribute('transform','translate('+kvx.toFixed(1)+','+kvy.toFixed(1)+') rotate('+KV.a+')');
+  kvEl.style.opacity=kvo;
+
+  // сводка
+  let bi=0;for(let k=0;k<BRIEF.length;k++)if(BRIEF[k].t<=T)bi=k;
+  if(bi!==lastBrief){lastBrief=bi;briefTx.innerHTML=BRIEF[bi].x;
+    briefEl.classList.remove('flash');void briefEl.offsetWidth;briefEl.classList.add('flash');}
+}
+
+/* ================= ЭФФЕКТЫ ================= */
+function fireFX(tx,ty){
+  // дульная вспышка
+  const ang=Math.atan2(ty-KV.y,tx-KV.x)*180/Math.PI;
+  const mx=KV.x+Math.cos(ang*Math.PI/180)*34, my=KV.y+Math.sin(ang*Math.PI/180)*34;
+  const fl=mk('use',{href:'#tz-flash',transform:'translate('+mx+','+my+') rotate('+ang+')'});
+  fl.style.transformBox='fill-box';fl.style.transformOrigin='left center';
+  fl.innerHTML='';
+  fx.appendChild(fl);
+  fl.animate([{transform:'scale(.4)',opacity:1},{transform:'scale(1.25)',opacity:0}],
+    {duration:260,easing:'ease-out'}).onfinish=()=>fl.remove();
+
+  // трассер
+  const ln=mk('line',{x1:mx,y1:my,x2:tx,y2:ty,class:'tracer'});
+  ln.setAttribute('stroke','#ffd27a');ln.setAttribute('stroke-width','2.6');
+  ln.setAttribute('stroke-linecap','round');ln.setAttribute('filter','url(#glow)');
+  const len=Math.hypot(tx-mx,ty-my);
+  ln.setAttribute('stroke-dasharray',len);ln.setAttribute('stroke-dashoffset',len);
+  fx.appendChild(ln);
+  ln.animate([{strokeDashoffset:len,opacity:1},{strokeDashoffset:0,opacity:1,offset:.35},
+    {strokeDashoffset:0,opacity:0}],{duration:420,easing:'ease-out'}).onfinish=()=>ln.remove();
+
+  // вспышка попадания
+  const im=mk('circle',{cx:tx,cy:ty,r:6,fill:'#fff3c4'});
+  fx.appendChild(im);
+  im.animate([{r:4,opacity:1,fill:'#fff6d0'},{r:30,opacity:0,fill:'#ff9a2a'}],
+    {duration:520,easing:'ease-out'}).onfinish=()=>im.remove();
+}
+function addWreckFX(x,y){
+  const g=mk('g',{transform:'translate('+x.toFixed(1)+','+y.toFixed(1)+')'});
+  const f=mk('use',{href:'#tz-flame',y:'-6'});
+  f.style.transformBox='fill-box';f.style.transformOrigin='bottom center';
+  f.style.animation='flick .45s ease-in-out infinite alternate';
+  g.appendChild(f);
+  for(let k=0;k<3;k++){
+    const c=mk('circle',{cx:(k-1)*5,cy:-14-k*4,r:6+k*2,fill:'#3c3a33'});
+    c.style.transformBox='fill-box';c.style.transformOrigin='center';
+    c.style.animation='sm '+(3+k*.6)+'s linear '+(k*.9)+'s infinite';
+    g.appendChild(c);
+  }
+  fx.appendChild(g);
+  return g;
+}
+const st=document.createElement('style');
+st.textContent='@keyframes flick{from{transform:scale(.8)}to{transform:scale(1.18)}}'+
+ '@keyframes sm{0%{opacity:.5;transform:translate(0,0) scale(.45)}'+
+ '100%{opacity:0;transform:translate(-9px,-52px) scale(2.3)}}';
+document.head.appendChild(st);
+
+let fired={};
+function checkEvents(prev,now){
+  DESTROY.forEach(d=>{
+    if(prev<d.t&&d.t<=now){
+      d.i.forEach(i=>{
+        const tk=tanks[i];
+        tk.dead=true;
+        const p=posOf(i,d.t);
+        tk.g.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+') rotate('+p.a.toFixed(1)+')');
+        tk.hit.style.display='';tk.body.style.filter='brightness(.34) saturate(.45) sepia(.5)';
+        fireFX(p.x,p.y);addWreckFX(p.x,p.y);
+        if(navigator.vibrate)navigator.vibrate(14);
+      });
+    }
+  });
+}
+function clearFX(){fx.innerHTML='';fired={};}
+
+/* ================= ВОСПРОИЗВЕДЕНИЕ ================= */
+const bPlay=$('bPlay'),playIco=$('playIco'),playSub=$('playSub');
+function setPlayUI(){
+  playIco.textContent=playing?'⏸':'▶';
+  bPlay.classList.toggle('playing',playing);
+  playSub.textContent=playing?'пауза':(T>=END?'повтор':'начать реконструкцию');
+}
+function loop(ts){
+  if(!playing)return;
+  if(!lastTs)lastTs=ts;
+  const dt=(ts-lastTs)/1000;lastTs=ts;
+  const prev=T;
+  T=Math.min(END,T+dt*RATE);
+  checkEvents(prev,T);
+  render();
+  if(T>=END){pause();return;}
+  raf=requestAnimationFrame(loop);
+}
+function play(){
+  if(T>=END)reset();
+  playing=true;lastTs=0;hint.classList.add('hidden');setPlayUI();
+  raf=requestAnimationFrame(loop);
+}
+function pause(){playing=false;if(raf)cancelAnimationFrame(raf);setPlayUI();}
+function reset(){
+  pause();T=0;lastBrief=-1;clearFX();tanks.forEach(t=>{t.dead=false;t.hit.style.display='none';t.body.style.filter='';});
+  render();hint.classList.remove('hidden');
+}
+bPlay.addEventListener('click',()=>{playing?pause():play();});
+$('bReset').addEventListener('click',reset);
+
+/* ---------- перемотка ---------- */
+let dragging=false;
+function seek(v){
+  T=parseFloat(v);
+  if(T>0)hint.classList.add('hidden');
+  clearFX();lastBrief=-1;
+  tanks.forEach(tk=>{tk.dead=false;tk.hit.style.display='none';tk.body.style.filter='';});
+  DESTROY.forEach(d=>{ if(d.t<=T){ d.i.forEach(i=>{
+      const p=posOf(i,d.t);const tk=tanks[i];tk.dead=true;
+      tk.hit.style.display='';tk.body.style.filter='brightness(.34) saturate(.45) sepia(.5)';
+      addWreckFX(p.x,p.y);
+  });}});
+  render();
+}
+scrub.addEventListener('input',e=>{pause();dragging=true;seek(e.target.value);});
+scrub.addEventListener('change',()=>{dragging=false;});
+
+/* ---------- метки на шкале ---------- */
+(function(){
+  const w=$('ticks');
+  DESTROY.forEach(d=>{const i=document.createElement('i');i.style.left=(d.t/END*100)+'%';w.appendChild(i);});
+})();
+
+/* ================= ПОВОРОТ / ФОКУС ================= */
+let rotAnim=null;
+function applyRot(){
+  mapRoot.setAttribute('transform',
+    'translate(360 500) scale('+rotScale.toFixed(3)+') rotate('+rotDeg.toFixed(2)+') translate(-360 -500)');
+}
+function setRot(deg){
+  const from={d:rotDeg,s:rotScale};
+  const to={d:deg,s:(deg%180===0)?1:0.735};
+  const t0=performance.now(),dur=720;
+  if(rotAnim)cancelAnimationFrame(rotAnim);
+  (function step(now){
+    let k=Math.min(1,(now-t0)/dur);
+    const e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+    rotDeg=from.d+(to.d-from.d)*e;
+    rotScale=from.s+(to.s-from.s)*e;
+    applyRot();
+    if(k<1)rotAnim=requestAnimationFrame(step);
+  })(t0);
+  $('bRot').classList.add('on');
+  setTimeout(()=>$('bRot').classList.remove('on'),760);
+}
+$('bRot').addEventListener('click',()=>{setZoom(false);setRot(rotDeg+90);});
+
+function setVB(v,anim){
+  if(!anim){vb=v;stage.setAttribute('viewBox',v.x+' '+v.y+' '+v.w+' '+v.h);return;}
+  const f={x:vb.x,y:vb.y,w:vb.w,h:vb.h},t0=performance.now(),dur=520;
+  (function s(now){let k=Math.min(1,(now-t0)/dur);const e=1-Math.pow(1-k,3);
+    vb={x:f.x+(v.x-f.x)*e,y:f.y+(v.y-f.y)*e,w:f.w+(v.w-f.w)*e,h:f.h+(v.h-f.h)*e};
+    stage.setAttribute('viewBox',vb.x+' '+vb.y+' '+vb.w+' '+vb.h);
+    if(k<1)requestAnimationFrame(s);})(t0);
+}
+function setZoom(on){
+  zoomed=on;$('bZoom').classList.toggle('on',on);
+  if(on){ setVB({x:255-216,y:747-300,w:432,h:600},true); }
+  else  { setVB({x:0,y:0,w:720,h:1000},true); }
+}
+$('bZoom').addEventListener('click',()=>setZoom(!zoomed));
+
+/* ---------- панорама пальцем ---------- */
+let panning=false,px0=0,py0=0,vb0=null;
+stage.addEventListener('pointerdown',e=>{
+  if(!zoomed)return;panning=true;px0=e.clientX;py0=e.clientY;vb0={x:vb.x,y:vb.y};
+  stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove',e=>{
+  if(!panning)return;
+  const r=stage.getBoundingClientRect();
+  const sc=vb.w/r.width;
+  vb.x=vb0.x-(e.clientX-px0)*sc;
+  vb.y=vb0.y-(e.clientY-px0)*sc;
+  vb.x=Math.max(-60,Math.min(720-vb.w+60,vb.x));
+  vb.y=Math.max(-60,Math.min(1000-vb.h+60,vb.y));
+  stage.setAttribute('viewBox',vb.x+' '+vb.y+' '+vb.w+' '+vb.h);
+});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,()=>{panning=false;}));
+
+/* ================= ЛИСТ ЗНАКОВ ================= */
+const sheet=$('sheet'),bd=$('backdrop');
+function openSheet(){sheet.classList.add('show');bd.classList.add('show');}
+function closeSheet(){sheet.classList.remove('show');bd.classList.remove('show');}
+$('bLeg').addEventListener('click',openSheet);
+$('sheetX').addEventListener('click',closeSheet);
+bd.addEventListener('click',closeSheet);
+let sy=null;
+sheet.querySelector('.sheet-b').addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+sheet.querySelector('.sheet-b').addEventListener('touchmove',e=>{
+  if(sy===null)return;
+  if(e.touches[0].clientY-sy>70&&e.currentTarget.scrollTop<=0)closeSheet();
+},{passive:true});
+
+/* ================= КЛАВИАТУРА (отладка) ================= */
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();playing?pause():play();}
+  if(e.code==='ArrowRight'){pause();seek(Math.min(END,T+1));}
+  if(e.code==='ArrowLeft'){pause();seek(Math.max(0,T-1));}
+  if(e.key==='r')setRot(rotDeg+90);
+});
+
+/* ================= СТАРТ ================= */
+applyRot();
+render();
+setPlayUI();
+window.addEventListener('resize',()=>{});
+})();
+</script>
+</body>
+</html>
