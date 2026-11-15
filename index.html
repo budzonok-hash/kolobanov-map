@@ -85,19 +85,16 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
 
 /* карта */
 .map{position:relative;border:1px solid var(--line);border-radius:11px;overflow:hidden;min-height:0;
-  background:radial-gradient(120% 90% at 50% 25%,#3c422d 0%,#23281b 60%,#171a13 100%);
-  box-shadow:0 6px 26px rgba(0,0,0,.5)}
+  background:#23281b;box-shadow:0 6px 26px rgba(0,0,0,.5)}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #stage.grabbing{cursor:grabbing}
-.hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;
-  gap:8px;pointer-events:none;z-index:3}
-.chip{background:rgba(18,22,13,.8);border:1px solid rgba(232,180,74,.3);border-radius:8px;padding:4px 11px;
-  font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#cfcbb2}
-.chip b{color:var(--amber)}
-.brief{position:absolute;left:10px;right:10px;bottom:10px;z-index:4;
-  background:linear-gradient(180deg,rgba(18,22,13,.86),rgba(18,22,13,.96));
-  border:1px solid rgba(232,180,74,.3);border-left:3px solid var(--amber);border-radius:9px;
-  padding:8px 13px 9px;box-shadow:0 4px 18px rgba(0,0,0,.5);max-width:920px}
+
+/* сводка — правый нижний угол */
+.brief{position:absolute;right:10px;bottom:10px;left:auto;z-index:4;
+  max-width:min(640px,64%);
+  background:linear-gradient(180deg,rgba(18,22,13,.88),rgba(18,22,13,.96));
+  border:1px solid rgba(232,180,74,.3);border-right:3px solid var(--amber);border-radius:9px;
+  padding:8px 13px 9px;box-shadow:0 4px 18px rgba(0,0,0,.5);text-align:left}
 .brief .t{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.22em;color:var(--amber);
   text-transform:uppercase;display:block;margin-bottom:3px}
 .brief p{margin:0;font-size:13.4px;line-height:1.42;color:#e8e4cf}
@@ -188,9 +185,8 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
 
   .main{display:flex;flex-direction:column;padding:7px;gap:0}
   .map{flex:1 1 auto;border-radius:9px}
-  .brief{left:7px;right:7px;bottom:7px;padding:7px 10px 8px;cursor:pointer}
+  .brief{right:7px;bottom:7px;left:auto;max-width:min(86%,430px);padding:7px 10px 8px;cursor:pointer}
   .brief p{font-size:12.2px;line-height:1.35;max-height:3.9em;overflow:hidden}
-  .chip{font-size:9px;padding:3px 8px;letter-spacing:.1em}
   .start-hint span{font-size:14px}
   .start-hint em{font-size:11.5px}
 
@@ -256,7 +252,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
   </section>
 
   <section class="map" id="mapBox">
-    <svg id="stage" viewBox="-230 -180 1180 1360" preserveAspectRatio="xMidYMid meet">
+    <svg id="stage" viewBox="-240 -190 1200 1380" preserveAspectRatio="xMidYMid slice">
       <defs>
         <pattern id="pField" width="40" height="40" patternUnits="userSpaceOnUse">
           <g stroke="#a99f78" stroke-width="1" opacity=".5" stroke-linecap="round">
@@ -338,9 +334,9 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
       </defs>
 
       <g id="mapRoot">
-        <!-- основа листа -->
-        <rect x="-500" y="-500" width="1800" height="2300" fill="#d5ccaa"/>
-        <rect x="-500" y="-500" width="1800" height="2300" fill="url(#pField)"/>
+        <!-- бесконечная бумага + поле: без пустот при любой панораме -->
+        <rect x="-8000" y="-8000" width="17000" height="17000" fill="#d5ccaa"/>
+        <rect x="-8000" y="-8000" width="17000" height="17000" fill="url(#pField)"/>
         <g id="grid"></g>
 
         <!-- северо-западный лесной массив -->
@@ -350,7 +346,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
         <path d="M600,-165 H935 V150 C862,140 792,102 722,52 C672,16 630,-78 600,-165 Z"
               fill="url(#pForest)" stroke="#54693d" stroke-width="2"/>
 
-        <!-- заболоченный луг (расширен на восток) -->
+        <!-- заболоченный луг -->
         <path d="M935,120 L935,1000 H146 C228,930 298,858 356,778 C414,698 466,616 516,528
                  C576,424 660,300 762,204 C822,148 880,128 935,120 Z"
               fill="url(#pMeadow)" stroke="#8d9b64" stroke-width="1.4"/>
@@ -369,7 +365,6 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
         <path d="M0,0 H560 L516,74 C470,140 428,182 380,250 C332,320 282,362 222,432
                  C172,492 122,548 92,622 C66,692 46,762 22,832 L0,832 Z"
               fill="url(#pForest)" stroke="#54693d" stroke-width="2"/>
-        <!-- просека -->
         <path d="M58,424 L302,222" stroke="#3f5230" stroke-width="3" stroke-dasharray="14 8" opacity=".75"/>
         <text x="120" y="352" transform="rotate(-39.6 120 352)" font-family="Oswald,sans-serif" font-size="12"
               letter-spacing="3" fill="#3d5230" opacity=".9">ПРОСЕКА</text>
@@ -380,7 +375,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
         <text x="770" y="20" text-anchor="middle" font-family="Oswald,sans-serif" font-size="13"
               letter-spacing="3" fill="#3d5230" opacity=".85">ЛЕС</text>
 
-        <!-- кустарник на востоке -->
+        <!-- кустарник -->
         <g opacity=".95">
           <use href="#tz-bush" x="782" y="470"/><use href="#tz-bush" x="812" y="500"/>
           <use href="#tz-bush" x="760" y="516"/><use href="#tz-bush" x="836" y="546"/>
@@ -475,7 +470,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
         <text x="290" y="906" text-anchor="middle" font-family="Oswald,sans-serif" font-size="11"
               letter-spacing="2" fill="#4c5c36">САДЫ</text>
 
-        <!-- деревня Сяськелево -->
+        <!-- Сяськелево -->
         <g filter="url(#softsh)">
           <use href="#tz-house" x="-150" y="596"/><use href="#tz-house" x="-112" y="580"/>
           <use href="#tz-house" x="-74" y="600"/><use href="#tz-house" x="-160" y="638"/>
@@ -586,7 +581,6 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
           <text x="0" y="-30" text-anchor="middle" font-family="Oswald,sans-serif" font-size="12" fill="#3a3a28">С</text>
         </g>
 
-        <!-- надпись вверху слева -->
         <text x="-198" y="-124" font-family="Oswald,sans-serif" font-size="12" letter-spacing="2.4"
               fill="#5c5638">СХЕМА-РЕКОНСТРУКЦИЯ БОЯ</text>
         <text x="-198" y="-108" font-family="PT Sans,sans-serif" font-size="10.5" fill="#7a7455">
@@ -603,7 +597,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
         </g>
         <text x="40" y="1140" font-family="PT Sans,sans-serif" font-size="11" fill="#5c5638">20 августа 1941 г.</text>
 
-        <!-- ПОДПИСЬ МЕСТНОСТИ (свободный юго-восточный край) -->
+        <!-- ПОДПИСЬ МЕСТНОСТИ -->
         <g transform="translate(552,1012)">
           <rect x="0" y="0" width="378" height="140" fill="rgba(222,213,180,.94)" stroke="#6b6545" stroke-width="1.6"/>
           <rect x="4" y="4" width="370" height="132" fill="none" stroke="#6b6545" stroke-width=".7"/>
@@ -620,15 +614,10 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
           </g>
         </g>
 
-        <rect x="-500" y="-500" width="1800" height="2300" filter="url(#grain)" opacity=".12"
+        <rect x="-240" y="-190" width="1200" height="1380" filter="url(#grain)" opacity=".12"
               style="mix-blend-mode:multiply;pointer-events:none"/>
       </g>
     </svg>
-
-    <div class="hud">
-      <div class="chip">Лист 1 · <b>панорама</b></div>
-      <div class="chip" id="rotChip">Поворот: <b>0°</b></div>
-    </div>
 
     <div class="brief" id="brief">
       <span class="t">Сводка боя</span>
@@ -715,8 +704,11 @@ const stage=$('stage'), mapRoot=$('mapRoot'), units=$('units'), fx=$('fx'), road
 const roadLen=road.getTotalLength();
 const N=22, END=48; let RATE=1.75;
 
-/* ---------- геометрия ---------- */
-const SHEET={x:-230,y:-180,w:1180,h:1360}, CX=360, CY=500, ROTFIT=0.868;
+/* ---------- геометрия листа ---------- */
+const EXT={x:-240,y:-190,w:1200,h:1380};          /* зона местности (заполняет экран) */
+const FRAME={x:-215,y:-165,w:1150,h:1330};        /* рамка листа */
+const CX=360, CY=500, ROTFIT=0.902;
+
 function roadLenAt(x,y){let b=0,d=1e18;for(let L=0;L<=roadLen;L+=3){const p=road.getPointAtLength(L);
   const q=(p.x-x)**2+(p.y-y)**2;if(q<d){d=q;b=L;}}return b;}
 const KILL=roadLenAt(255,747);
@@ -812,7 +804,7 @@ function render(){
   scrub.value=T;scrub.style.setProperty('--p',(T/END*100)+'%');
   for(let i=0;i<N;i++){
     const tk=tanks[i],t=isDead(i,T)?DMAP[i]:T,p=posOf(i,t);
-    tk.g.style.display=(p.x>-60&&p.x<960&&p.y>-60&&p.y<1200)?'':'none';
+    tk.g.style.display='';
     tk.g.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+') rotate('+p.a.toFixed(1)+')');
     const d=isDead(i,T);
     tk.body.style.filter=d?'brightness(.34) saturate(.45) sepia(.5)':'';
@@ -882,8 +874,8 @@ function setPlayUI(){playIco.textContent=playing?'⏸':'▶';bPlay.classList.tog
 function loop(ts){
   if(!playing)return;
   if(!lastTs)lastTs=ts;
-  const dt=(ts-lastTs)/1000;lastTs=ts,prev=T;
-  var prev=T-dt*RATE;
+  const dt=(ts-lastTs)/1000;lastTs=ts;
+  const prev=T;
   T=Math.min(END,T+dt*RATE);
   checkEvents(prev,T);render();
   if(T>=END){pause();return;}
@@ -914,23 +906,30 @@ scrub.addEventListener('input',e=>{pause();seek(e.target.value);});
   document.querySelectorAll('.sp').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');RATE=parseFloat(b.dataset.r);}));
 
-/* ---------- ВИД: панорама / масштаб ---------- */
-let view={x:SHEET.x,y:SHEET.y,w:SHEET.w,h:SHEET.h}, userView=false, focusMode=false;
+/* ---------- ВИД: заполнение без пустот, панорама, масштаб ---------- */
+let view={x:EXT.x,y:EXT.y,w:EXT.w,h:EXT.h}, userView=false, focusMode=false;
 const ar=()=>{const r=stage.getBoundingClientRect();return (r.width||1)/(r.height||1);};
 function applyView(){stage.setAttribute('viewBox',view.x.toFixed(2)+' '+view.y.toFixed(2)+' '+view.w.toFixed(2)+' '+view.h.toFixed(2));}
 function makeView(cx,cy,spanW){const a=ar();let w=spanW,h=w/a;return {x:cx-w/2,y:cy-h/2,w:w,h:h};}
-function clampView(v){
+function clampView(v,strict){
   const a=ar();
-  v.w=clamp(v.w,180,3200);v.h=v.w/a;
-  const px=v.w*.4,py=v.h*.4;
-  v.x=clamp(v.x,SHEET.x-px,SHEET.x+SHEET.w-v.w+px);
-  v.y=clamp(v.y,SHEET.y-py,SHEET.y+SHEET.h-v.h+py);
+  v.w=clamp(v.w,180,2600);v.h=v.w/a;
+  if(v.w>=EXT.w)v.x=EXT.x+(EXT.w-v.w)/2;
+  else if(strict)v.x=clamp(v.x,EXT.x,EXT.x+EXT.w-v.w);
+  else{const p=v.w*.3;v.x=clamp(v.x,EXT.x-p,EXT.x+EXT.w-v.w+p);}
+  if(v.h>=EXT.h)v.y=EXT.y+(EXT.h-v.h)/2;
+  else if(strict)v.y=clamp(v.y,EXT.y,EXT.y+EXT.h-v.h);
+  else{const p=v.h*.3;v.y=clamp(v.y,EXT.y-p,EXT.y+EXT.h-v.h+p);}
   return v;
 }
-function sheetSpan(){
-  const rot=(((rotDeg%180)+180)%180)!==0;
-  const w0=rot?SHEET.h*ROTFIT:SHEET.w, h0=rot?SHEET.w*ROTFIT:SHEET.h;
-  return Math.max(w0,h0*ar())*1.02;
+const isRot=()=>(((rotDeg%180)+180)%180)!==0;
+function sheetSpan(){ /* весь лист (вписать) */
+  const w0=isRot()?FRAME.h*ROTFIT:FRAME.w, h0=isRot()?FRAME.w*ROTFIT:FRAME.h;
+  return Math.max(w0,h0*ar())*1.04;
+}
+function fillSpan(){ /* заполнить экран без пустот */
+  const w0=isRot()?FRAME.h*ROTFIT:EXT.w, h0=isRot()?FRAME.w*ROTFIT:EXT.h;
+  return Math.min(w0,h0*ar())*0.995;
 }
 let tw=null;
 function tweenView(tg,dur){
@@ -943,16 +942,20 @@ function tweenView(tg,dur){
     if(k<1)tw=requestAnimationFrame(s);
   })(t0);
 }
-function goAll(anim){const t=clampView(makeView(CX,CY,sheetSpan()));
-  if(anim===false){view=t;applyView();}else tweenView(t,520);userView=true;focusMode=false;
-  $('bZoom').classList.remove('on');}
-function goFocus(){const t=clampView(makeView(255,747,Math.min(560,sheetSpan())));
+function goAll(anim){const t=clampView(makeView(CX,CY,sheetSpan()),false);
+  if(anim===false){view=t;applyView();}else tweenView(t,520);
+  userView=true;focusMode=false;$('bZoom').classList.remove('on');}
+function goFill(anim){const t=clampView(makeView(330,560,fillSpan()),true);
+  if(anim===false){view=t;applyView();}else tweenView(t,520);
+  userView=true;focusMode=false;$('bZoom').classList.remove('on');}
+function goFocus(){const t=clampView(makeView(255,747,Math.min(560,fillSpan())),true);
   tweenView(t,520);userView=true;focusMode=true;$('bZoom').classList.add('on');}
 $('bZoom').addEventListener('click',()=>{focusMode?goAll(true):goFocus();});
 
 window.addEventListener('resize',()=>{
   view.h=view.w/ar();
-  if(!userView)goAll(false); else applyView();
+  if(!userView)goFill(false);else applyView();
+  if(!isMobile())closeSheets();
 });
 
 /* ---------- поворот листа ---------- */
@@ -960,7 +963,6 @@ let rotAnim=null;
 function applyRot(){
   mapRoot.setAttribute('transform','translate('+CX+' '+CY+') scale('+rotScale.toFixed(3)+
     ') rotate('+rotDeg.toFixed(2)+') translate('+-CX+' '+-CY+')');
-  $('rotChip').innerHTML='Поворот: <b>'+(((rotDeg%360)+360)%360)+'°</b>';
 }
 function setRot(deg){
   const f={d:rotDeg,s:rotScale},to={d:deg,s:(deg%180===0)?1:ROTFIT};
@@ -969,7 +971,8 @@ function setRot(deg){
   (function step(now){
     let k=Math.min(1,(now-t0)/dur);const e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
     rotDeg=f.d+(to.d-f.d)*e;rotScale=f.s+(to.s-f.s)*e;applyRot();
-    if(k<1)rotAnim=requestAnimationFrame(step);else{rotDeg=deg;rotScale=to.s;applyRot();goAll(true);}
+    if(k<1)rotAnim=requestAnimationFrame(step);
+    else{rotDeg=deg;rotScale=to.s;applyRot();goFill(true);}
   })(t0);
   $('bRot').classList.add('on');setTimeout(()=>$('bRot').classList.remove('on'),780);
 }
@@ -981,7 +984,7 @@ const rel=stage.getBoundingClientRect.bind(stage);
 stage.addEventListener('pointerdown',e=>{
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(ptrs.size===1){
-    pan={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y,moved:0};
+    pan={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};
     try{stage.setPointerCapture(e.pointerId);}catch(err){}
     stage.classList.add('grabbing');
   }else if(ptrs.size===2){
@@ -996,19 +999,17 @@ stage.addEventListener('pointermove',e=>{
   if(pinch&&ptrs.size>=2){
     const p=[...ptrs.values()],nd=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)||1;
     const r=rel(),a=ar();
-    let w=clamp(pinch.w*pinch.d/nd,180,3200),h=w/a;
+    const w=clamp(pinch.w*pinch.d/nd,180,2600),h=w/a;
     const mx=pinch.vx+(pinch.cx-r.left)/r.width*pinch.w;
     const my=pinch.vy+(pinch.cy-r.top)/r.height*(pinch.w/a);
-    const ncx=(pinch.cx+ (p[0].x+p[1].x)/2 - (p[0].x+p[1].x)/2);
-    view=clampView({x:mx-(mx-pinch.vx)*(w/pinch.w),y:my-(my-pinch.vy)*(w/pinch.w),w:w,h:h});
+    view=clampView({x:mx-(mx-pinch.vx)*(w/pinch.w),y:my-(my-pinch.vy)*(w/pinch.w),w:w,h:h},false);
     applyView();userView=true;focusMode=false;$('bZoom').classList.remove('on');
     return;
   }
   if(!pan)return;
   const r=rel();
   const dx=(e.clientX-pan.x)*view.w/r.width, dy=(e.clientY-pan.y)*view.h/r.height;
-  pan.moved=Math.max(pan.moved,Math.abs(e.clientX-pan.x)+Math.abs(e.clientY-pan.y));
-  view=clampView({x:pan.vx-dx,y:pan.vy-dy,w:view.w,h:view.h});
+  view=clampView({x:pan.vx-dx,y:pan.vy-dy,w:view.w,h:view.h},false);
   applyView();userView=true;
 });
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,e=>{
@@ -1021,8 +1022,8 @@ stage.addEventListener('wheel',e=>{
   const r=rel(),a=ar(),k=e.deltaY<0?0.85:1.18;
   const mx=view.x+(e.clientX-r.left)/r.width*view.w;
   const my=view.y+(e.clientY-r.top)/r.height*view.h;
-  const w=clamp(view.w*k,180,3200),h=w/a;
-  view=clampView({x:mx-(mx-view.x)*(w/view.w),y:my-(my-view.y)*(w/view.w),w:w,h:h});
+  const w=clamp(view.w*k,180,2600),h=w/a;
+  view=clampView({x:mx-(mx-view.x)*(w/view.w),y:my-(my-view.y)*(w/view.w),w:w,h:h},false);
   applyView();userView=true;focusMode=false;$('bZoom').classList.remove('on');
 },{passive:false});
 stage.addEventListener('dblclick',()=>{focusMode?goAll(true):goFocus();});
@@ -1040,7 +1041,7 @@ function closeSheets(){
 }
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeSheets));
 bd.addEventListener('click',closeSheets);
-$('bLeg2').addEventListener('click',()=>{isMobile()?openSheet('pLeg'):goAll(true);});
+$('bLeg2').addEventListener('click',()=>{if(isMobile())openSheet('pLeg');else goAll(true);});
 briefEl.addEventListener('click',()=>{if(isMobile())openSheet('pLog');});
 document.querySelectorAll('.panel .panel-b').forEach(b=>{
   let sy=null;
@@ -1050,7 +1051,6 @@ document.querySelectorAll('.panel .panel-b').forEach(b=>{
     if(e.touches[0].clientY-sy>80&&b.scrollTop<=0)closeSheets();
   },{passive:true});
 });
-window.addEventListener('resize',()=>{if(!isMobile())closeSheets();});
 
 /* ---------- клавиатура ---------- */
 window.addEventListener('keydown',e=>{
@@ -1064,13 +1064,10 @@ window.addEventListener('keydown',e=>{
   else if(e.key==='Escape')closeSheets();
 });
 
-/* ---------- старт ---------- */
+/* ---------- старт: карта заполняет всю поверхность ---------- */
 applyRot();
 render();setPlayUI();
-requestAnimationFrame(()=>{
-  const span=Math.max(880,SHEET.h*ar()*0.96);
-  view=clampView(makeView(320,540,span));applyView();
-});
+requestAnimationFrame(()=>{goFill(false);});
 })();
 </script>
 </body>
