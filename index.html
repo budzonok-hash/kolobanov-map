@@ -27,7 +27,7 @@ body{
 /* ================= ШАПКА ================= */
 .top{flex:0 0 auto;display:flex;align-items:center;gap:13px;padding:9px 16px;position:relative;
   background:linear-gradient(180deg,#333c25,#1d2216);border-bottom:1px solid var(--line);
-  box-shadow:0 3px 18px rgba(0,0,0,.6);z-index:30;animation:drop .55s both}
+  box-shadow:0 3px 18px rgba(0,0,0,.6);z-index:30}
 .top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
   background:linear-gradient(90deg,transparent,rgba(232,180,74,.55),rgba(192,57,43,.4),transparent)}
 .emblem{flex:0 0 auto;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -68,10 +68,7 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
 .main{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:322px minmax(0,1fr) 330px;gap:12px;padding:12px 14px}
 .rcol{display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;min-height:0}
 .panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;
-  display:flex;flex-direction:column;min-height:0;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.45);animation:rise .6s both}
-.panel:nth-child(1){animation-delay:.05s}
-.rcol .panel:nth-child(1){animation-delay:.12s}
-.rcol .panel:nth-child(2){animation-delay:.18s}
+  display:flex;flex-direction:column;min-height:0;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.45)}
 .panel-h{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:10px 13px;border-bottom:1px solid var(--line);
   background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.12))}
 .panel-h h2{font-family:'Oswald',sans-serif;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
@@ -102,8 +99,8 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
 /* журнал */
 .log{list-style:none;margin:0;padding:6px}
 .log li{display:flex;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;border-left:3px solid transparent;
-  transition:background .18s,border-color .18s,transform .18s}
-.log li:hover{background:rgba(255,255,255,.055);transform:translateX(2px)}
+  transition:background .18s,border-color .18s}
+.log li:hover{background:rgba(255,255,255,.055)}
 .log li .tm{flex:0 0 auto;width:42px;font-family:'Oswald',sans-serif;font-size:13px;color:#8d9079;padding-top:1px}
 .log li .tx{font-size:12.5px;line-height:1.42;color:#bfc0a8}
 .log li.done .tm{color:#c98a5a}
@@ -116,32 +113,45 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
 
 /* ================= КАРТА ================= */
 .map{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:0;background:#23281b;
-  box-shadow:0 8px 30px rgba(0,0,0,.55);animation:sheetIn .8s both;--lum:1}
-.map.shake{animation:shk .3s}
-#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;
-  filter:brightness(var(--lum,1))}
+  box-shadow:0 8px 30px rgba(0,0,0,.55);contain:paint}
+.map.noshow{visibility:hidden}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:0}
 #stage.grabbing{cursor:grabbing}
+
+/* атмосферные слои — только композитинг, без SVG-фильтров */
+.grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;background-repeat:repeat}
+.clouds{position:absolute;inset:-14%;z-index:1;pointer-events:none;opacity:.6;transition:opacity .35s}
+.clouds.off{opacity:0}
+.clouds i{position:absolute;display:block;border-radius:50%;will-change:transform;backface-visibility:hidden}
+.clouds .c1{width:64%;height:46%;left:-34%;top:2%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(56,52,32,.34),rgba(56,52,32,0) 72%);animation:cd1 74s linear infinite}
+.clouds .c2{width:74%;height:52%;left:104%;top:24%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(48,46,28,.28),rgba(48,46,28,0) 72%);animation:cd2 96s linear infinite}
+.clouds .c3{width:56%;height:40%;left:-30%;top:62%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(60,56,36,.24),rgba(60,56,36,0) 72%);animation:cd3 118s linear infinite}
+@keyframes cd1{from{transform:translate3d(0,0,0)}to{transform:translate3d(230%,42%,0)}}
+@keyframes cd2{from{transform:translate3d(0,0,0)}to{transform:translate3d(-215%,-34%,0)}}
+@keyframes cd3{from{transform:translate3d(0,0,0)}to{transform:translate3d(250%,-26%,0)}}
+.tint{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .6s}
+.map[data-theme="dusk"] .tint{opacity:1;background:
+  linear-gradient(155deg,rgba(255,146,52,.15),rgba(66,44,96,.25)),
+  linear-gradient(0deg,rgba(24,20,10,.10),rgba(24,20,10,.10))}
+.map[data-theme="night"] .tint{opacity:1;background:
+  radial-gradient(460px 340px at 20% 64%,rgba(255,196,110,.24),transparent 72%),
+  linear-gradient(180deg,rgba(16,26,54,.46),rgba(6,10,24,.54))}
+.lum{position:absolute;inset:0;pointer-events:none;z-index:2;background:#0b0d06;opacity:0;transition:opacity .2s}
 .vig{position:absolute;inset:0;pointer-events:none;z-index:2;
   box-shadow:inset 0 0 90px rgba(24,20,10,.5),inset 0 0 22px rgba(24,20,10,.35);border-radius:12px}
-.tint{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .6s}
-.map[data-theme="dusk"] #stage{filter:brightness(calc(.94*var(--lum,1))) saturate(.92) contrast(1.03)}
-.map[data-theme="dusk"] .tint{opacity:1;background:linear-gradient(155deg,rgba(255,146,52,.18),rgba(66,44,96,.24))}
-.map[data-theme="night"] #stage{filter:brightness(calc(.68*var(--lum,1))) saturate(.6) contrast(1.08) hue-rotate(-10deg)}
-.map[data-theme="night"] .tint{opacity:1;background:
-  radial-gradient(460px 340px at 20% 64%,rgba(255,196,110,.30),transparent 72%),
-  linear-gradient(180deg,rgba(22,34,68,.44),rgba(9,14,32,.52))}
-.hitflash{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;
+.hitflash{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;will-change:opacity;
   background:radial-gradient(60% 50% at 22% 64%,rgba(255,196,110,.5),transparent 70%)}
-.hitflash.go{animation:hf .42s ease-out}
-@keyframes hf{0%{opacity:.85}100%{opacity:0}}
 
 /* зум-стек */
 .mapzoom{position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:5px}
 .mapzoom button{width:36px;height:36px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;
   background:rgba(14,17,10,.82);border:1px solid rgba(232,180,74,.32);color:#e6e2cd;font-size:17px;line-height:1;
-  font-family:'Oswald',sans-serif;transition:.18s;box-shadow:0 3px 12px rgba(0,0,0,.45)}
+  font-family:'Oswald',sans-serif;transition:border-color .18s,color .18s,background .18s;box-shadow:0 3px 12px rgba(0,0,0,.45)}
 .mapzoom button:hover{border-color:var(--amber);color:var(--amber2);background:rgba(30,36,20,.92)}
-.mapzoom button:active{transform:scale(.94)}
+.mapzoom button:active{background:rgba(52,60,32,.95)}
 .mapzoom button.sm{font-size:13px}
 
 /* тосты */
@@ -165,16 +175,13 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
   display:block;margin-bottom:3px}
 .brief p{margin:0;font-size:13.2px;line-height:1.42;color:#eae6d1}
 .brief p b{color:var(--amber2)}
-.brief.flash{animation:bf .6s ease}
-@keyframes bf{0%{background-color:rgba(126,86,22,.55)}100%{background-color:transparent}}
 .start-hint{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;pointer-events:none;
   transition:opacity .5s;padding:20px}
 .start-hint div{background:rgba(12,15,9,.92);border:1px solid rgba(232,180,74,.45);border-radius:14px;padding:18px 26px;
-  text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.65);animation:pl 2.4s infinite;max-width:94%}
+  text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.65);max-width:94%}
 .start-hint span{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.14em;color:var(--amber);display:block;
   margin-bottom:6px;text-transform:uppercase}
 .start-hint em{font-style:normal;font-size:12.5px;color:#cbc8b0;line-height:1.55;display:block}
-@keyframes pl{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 .hidden{opacity:0!important;pointer-events:none!important}
 
 /* ================= ПАНЕЛЬ ВИДА ================= */
@@ -208,7 +215,6 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
   padding:9px 6px;border-radius:8px;cursor:pointer;background:linear-gradient(180deg,#3a422b,#282e1d);
   border:1px solid var(--line2);color:var(--txt);transition:.18s}
 .acts button:hover{border-color:var(--amber);color:var(--amber2)}
-.acts button:active{transform:translateY(1px)}
 
 /* знаки */
 .leg{display:flex;align-items:center;gap:12px;padding:9px 13px;border-bottom:1px dashed rgba(255,255,255,.07)}
@@ -225,23 +231,19 @@ h1{font-family:'Oswald',sans-serif;font-weight:500;font-size:23px;letter-spacing
 /* ================= ПУЛЬТ ================= */
 .deck{flex:0 0 auto;display:flex;align-items:center;gap:13px;padding:10px 16px 12px;position:relative;
   background:linear-gradient(180deg,#282e1e,#191d12);border-top:1px solid var(--line);
-  box-shadow:0 -4px 20px rgba(0,0,0,.55);z-index:30;animation:rise .6s .1s both}
+  box-shadow:0 -4px 20px rgba(0,0,0,.55);z-index:30}
 .btn{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;
   background:linear-gradient(180deg,#3b432c,#282e1d);color:var(--txt);border:1px solid var(--line2);border-radius:9px;
   height:46px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:12px;
-  transition:transform .09s,background .2s,border-color .2s,color .2s;box-shadow:0 2px 0 rgba(0,0,0,.4);flex:0 0 auto}
+  transition:background .2s,border-color .2s,color .2s;box-shadow:0 2px 0 rgba(0,0,0,.4);flex:0 0 auto}
 .btn .ico{font-size:16px;line-height:1}
 .btn .lbl{display:none}
 .btn:hover{background:linear-gradient(180deg,#475134,#313824);border-color:#717c4f;color:var(--amber2)}
-.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:active{background:#242a19;box-shadow:none}
 .btn.on{border-color:var(--amber);color:var(--amber2);background:linear-gradient(180deg,#4c3f18,#332a11)}
 .btn.icon{width:46px;padding:0}
 .btn-play{background:linear-gradient(180deg,#a13722,#6d2117);border-color:#c2543c;color:#ffe9d8;font-size:14px;
-  letter-spacing:.16em;min-width:146px;position:relative;overflow:hidden}
-.btn-play::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,220,180,.22),transparent);
-  transform:translateX(-100%)}
-.btn-play:hover::after{animation:sweep 1.1s}
-@keyframes sweep{to{transform:translateX(100%)}}
+  letter-spacing:.16em;min-width:146px}
 .btn-play:hover{background:linear-gradient(180deg,#b53f27,#7d281c)}
 .btn-play.playing{background:linear-gradient(180deg,#b8801f,#835613);border-color:#e0a63a}
 .sep{width:1px;height:34px;background:var(--line);flex:0 0 auto}
@@ -259,9 +261,7 @@ input[type=range].tl{-webkit-appearance:none;appearance:none;width:100%;height:2
 input[type=range].tl::-webkit-slider-runnable-track{height:6px;border-radius:3px;border:1px solid #14170f;
   background:linear-gradient(90deg,#c0392b 0%,var(--amber) var(--p,0%),#454c34 var(--p,0%))}
 input[type=range].tl::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;margin-top:-7px;
-  background:radial-gradient(circle at 34% 30%,#ffe6a8,#d99b28);border:2px solid #1b1f14;
-  box-shadow:0 2px 7px rgba(0,0,0,.65);transition:transform .12s}
-input[type=range].tl:hover::-webkit-slider-thumb{transform:scale(1.15)}
+  background:radial-gradient(circle at 34% 30%,#ffe6a8,#d99b28);border:2px solid #1b1f14;box-shadow:0 2px 7px rgba(0,0,0,.65)}
 input[type=range].tl::-moz-range-track{height:6px;border-radius:3px;background:#454c34}
 input[type=range].tl::-moz-range-progress{height:6px;border-radius:3px;background:var(--amber)}
 input[type=range].tl::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#e8b44a;border:2px solid #1b1f14}
@@ -271,30 +271,21 @@ input[type=range].tl::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
 .sp:hover{border-color:#717c4f;color:var(--txt)}
 .sp.on{background:linear-gradient(180deg,#5b4a1a,#3d3212);border-color:var(--amber);color:var(--amber2)}
 .mstats{display:none}
-.backdrop{position:fixed;inset:0;background:rgba(5,7,4,.64);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}
+.backdrop{position:fixed;inset:0;background:rgba(5,7,4,.72);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}
 .backdrop.show{opacity:1;pointer-events:auto}
 
 /* слои */
 #stage.hide-grid #grid{opacity:0}
 #stage.hide-cont #contours,#stage.hide-cont #poles{opacity:0}
 #stage.hide-lbl text.lbl{opacity:0}
-#stage.hide-clouds #clouds{opacity:0}
 #stage.hide-aim #aimLayer{opacity:0}
 #stage.hide-smoke .wreckfx{opacity:0}
-#grid,#contours,#poles,#clouds,#aimLayer,.wreckfx{transition:opacity .35s}
+#grid,#contours,#poles,#aimLayer,.wreckfx{transition:opacity .35s}
 text.lbl{transition:opacity .35s}
 .wreckfx{opacity:var(--wo,1)}
 
-@keyframes drop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes sheetIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
-@keyframes shk{0%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}
-  75%{transform:translate(-1px,-1px)}100%{transform:translate(0,0)}}
 @keyframes flick{from{transform:scale(.78)}to{transform:scale(1.2)}}
 @keyframes sm{0%{opacity:.5;transform:translate(0,0) scale(.45)}100%{opacity:0;transform:translate(-11px,-58px) scale(2.4)}}
-@keyframes drift1{0%{transform:translate(-160px,-40px)}100%{transform:translate(1320px,120px)}}
-@keyframes drift2{0%{transform:translate(1240px,220px)}100%{transform:translate(-260px,-60px)}}
-@keyframes drift3{0%{transform:translate(-200px,700px)}100%{transform:translate(1280px,520px)}}
 @keyframes ric{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(0,-22px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -327,8 +318,8 @@ text.lbl{transition:opacity .35s}
   .toast{font-size:10.5px;padding:5px 9px}
   .start-hint span{font-size:13.5px}
   .start-hint em{font-size:11px}
+  .clouds{opacity:.45}
 
-  /* нижняя телеметрия */
   .mstats{display:block;flex:0 0 auto;background:linear-gradient(180deg,#232919,#1b2013);
     border-top:1px solid var(--line);padding:5px 9px 6px;z-index:29}
   .mpips{display:flex;gap:2px;margin-bottom:5px}
@@ -342,11 +333,11 @@ text.lbl{transition:opacity .35s}
   .mi.wide i{overflow:hidden;text-overflow:ellipsis;font-style:normal}
   .mi i{font-style:normal;color:var(--amber2)}
 
-  /* листы */
   .panel{position:fixed;left:0;right:0;bottom:0;top:auto;height:80dvh;max-height:80dvh;z-index:45;
     border-radius:18px 18px 0 0;border-top:2px solid var(--amber);transform:translateY(108%);
-    transition:transform .38s cubic-bezier(.32,.72,.35,1);box-shadow:0 -12px 46px rgba(0,0,0,.7);animation:none}
-  .panel.sheet-open{transform:translateY(0)}
+    transition:transform .38s cubic-bezier(.32,.72,.35,1);box-shadow:0 -12px 46px rgba(0,0,0,.7);
+    visibility:hidden}
+  .panel.sheet-open{transform:translateY(0);visibility:visible}
   .grab{display:block;width:44px;height:4px;border-radius:2px;background:#5f6748;margin:8px auto 4px;flex:0 0 auto}
   .mtabs{display:flex;gap:5px;padding:0 12px 9px;flex:0 0 auto}
   .mtabs button{flex:1 1 auto;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
@@ -366,7 +357,6 @@ text.lbl{transition:opacity .35s}
   .rng::-webkit-slider-thumb{width:18px;height:18px;margin-top:-7px}
   .leg{padding:11px 13px}
 
-  /* пульт */
   .deck{gap:6px;padding:8px 8px calc(env(safe-area-inset-bottom) + 9px);flex-wrap:wrap}
   .tlrow{flex:1 0 100%;order:-1;gap:8px;margin-bottom:5px}
   .tl-top{font-size:8.5px;letter-spacing:.08em;margin-bottom:0}
@@ -391,6 +381,9 @@ text.lbl{transition:opacity .35s}
   .panel{height:86dvh;max-height:86dvh}
   .brief p{font-size:11px;max-height:2.7em}
   .mstats{padding:4px 8px 5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .clouds i{animation:none}
 }
 </style>
 </head>
@@ -420,7 +413,6 @@ text.lbl{transition:opacity .35s}
 
 <div class="main">
 
-  <!-- ЖУРНАЛ -->
   <section class="panel" id="pLog">
     <div class="grab"></div>
     <div class="panel-h"><h2>Сводка боя</h2><span class="cnt">14:00 — 14:45</span><button class="px" data-close>✕</button></div>
@@ -431,11 +423,10 @@ text.lbl{transition:opacity .35s}
       <div class="srow"><span class="k">Цель наведения</span><span class="v" id="tgtVal">зона засады</span></div>
       <div class="srow"><span class="k">Рикошетов по броне</span><span class="v" id="hitVal">0</span></div>
     </div>
-    <div class="panel-b"><ul class="log" id="log"></ul></div>
+    <div class="panel-b" id="logScroll"><ul class="log" id="log"></ul></div>
     <div class="log-foot">Хронология восстановлена по доступным источникам. Башни танков наводятся на цель: корпус идёт по дороге, орудие доворачивается отдельно.</div>
   </section>
 
-  <!-- КАРТА -->
   <section class="map" id="mapBox" data-theme="dusk">
     <svg id="stage" viewBox="-240 -190 1200 1380" preserveAspectRatio="xMidYMid slice">
       <defs>
@@ -466,18 +457,6 @@ text.lbl{transition:opacity .35s}
           <rect width="18" height="18" fill="#c6d2a2"/>
           <circle cx="9" cy="9" r="2.6" fill="none" stroke="#5d7445" stroke-width="1.2"/>
         </pattern>
-        <filter id="grain" x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
-          <feColorMatrix type="saturate" values="0"/>
-        </filter>
-        <filter id="cloudBlur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="26"/></filter>
-        <filter id="glow" x="-140%" y="-140%" width="380%" height="380%">
-          <feGaussianBlur stdDeviation="3.4" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="softsh" x="-45%" y="-45%" width="190%" height="190%">
-          <feDropShadow dx="1.5" dy="2" stdDeviation="1.6" flood-color="#2a2416" flood-opacity=".55"/>
-        </filter>
         <radialGradient id="gFlash"><stop offset="0" stop-color="#fff6d2"/><stop offset="55%" stop-color="#ffb43c"/>
           <stop offset="100%" stop-color="#ff6a1a" stop-opacity="0"/></radialGradient>
         <radialGradient id="gScorch"><stop offset="0" stop-color="#2a2118" stop-opacity=".75"/>
@@ -642,7 +621,8 @@ text.lbl{transition:opacity .35s}
         <text class="lbl" x="430" y="998" font-family="Oswald,sans-serif" font-size="12" letter-spacing="2" fill="#6d5322">СТОГА СЕНА</text>
         <text class="lbl" x="606" y="884" text-anchor="middle" font-family="Oswald,sans-serif" font-size="14" letter-spacing="3" fill="#5d6b3c">ЗАБОЛОЧЕННЫЙ ЛУГ</text>
 
-        <g filter="url(#softsh)">
+        <g>
+          <rect x="132" y="765" width="36" height="21" fill="#6b5a3c" opacity=".35"/>
           <rect x="130" y="762" width="36" height="21" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
           <rect x="176" y="753" width="27" height="17" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
           <rect x="138" y="797" width="46" height="17" fill="#a98a60" stroke="#4a3a24" stroke-width="1.6"/>
@@ -660,7 +640,7 @@ text.lbl{transition:opacity .35s}
         <path d="M258,846 h64 v44 h-64 z" fill="url(#pOrch)" stroke="#5d7445" stroke-width="1.2"/>
         <text class="lbl" x="290" y="906" text-anchor="middle" font-family="Oswald,sans-serif" font-size="11" letter-spacing="2" fill="#4c5c36">САДЫ</text>
 
-        <g filter="url(#softsh)">
+        <g>
           <use href="#tz-house" x="-150" y="596"/><use href="#tz-house" x="-112" y="580"/><use href="#tz-house" x="-74" y="600"/>
           <use href="#tz-house" x="-160" y="638"/><use href="#tz-house" x="-118" y="648"/><use href="#tz-house" x="-76" y="640"/>
           <use href="#tz-house" x="-140" y="682"/><use href="#tz-house" x="-96" y="690"/>
@@ -668,7 +648,7 @@ text.lbl{transition:opacity .35s}
         <ellipse cx="-52" cy="716" rx="34" ry="18" fill="#9dc0cf" stroke="#4d7789" stroke-width="1.5"/>
         <text class="lbl" x="-118" y="558" text-anchor="middle" font-family="Oswald,sans-serif" font-size="15" letter-spacing="2" fill="#4a3a24">СЯСЬКЕЛЕВО</text>
         <text class="lbl" x="-52" y="748" text-anchor="middle" font-family="Oswald,sans-serif" font-size="10.5" letter-spacing="1.5" fill="#3d6478">ПРУД</text>
-        <g filter="url(#softsh)">
+        <g>
           <use href="#tz-house" x="812" y="356"/><use href="#tz-house" x="852" y="372"/>
           <use href="#tz-house" x="820" y="398"/><use href="#tz-house" x="862" y="414"/>
         </g>
@@ -692,15 +672,6 @@ text.lbl{transition:opacity .35s}
 
         <use href="#tz-bush" x="168" y="668" opacity=".9"/><use href="#tz-bush" x="112" y="726" opacity=".9"/>
         <use href="#tz-bush" x="196" y="704" opacity=".8"/>
-
-        <g id="clouds" opacity=".5" style="mix-blend-mode:multiply">
-          <g style="animation:drift1 74s linear infinite">
-            <ellipse cx="0" cy="0" rx="230" ry="120" fill="#6d6a4a" opacity=".2" filter="url(#cloudBlur)"/>
-            <ellipse cx="150" cy="60" rx="150" ry="90" fill="#6d6a4a" opacity=".16" filter="url(#cloudBlur)"/>
-          </g>
-          <g style="animation:drift2 96s linear infinite"><ellipse cx="0" cy="0" rx="270" ry="130" fill="#5f5c40" opacity=".16" filter="url(#cloudBlur)"/></g>
-          <g style="animation:drift3 118s linear infinite"><ellipse cx="0" cy="0" rx="200" ry="110" fill="#6d6a4a" opacity=".14" filter="url(#cloudBlur)"/></g>
-        </g>
 
         <g id="craters"></g>
 
@@ -797,11 +768,13 @@ text.lbl{transition:opacity .35s}
             <text x="14" y="132">пункты: Сяськелево (запад), Химози (восток).</text>
           </g>
         </g>
-        <rect x="-240" y="-190" width="1200" height="1380" filter="url(#grain)" opacity=".12" style="mix-blend-mode:multiply;pointer-events:none"/>
       </g>
     </svg>
 
+    <div class="grain" id="grain"></div>
+    <div class="clouds" id="clouds"><i class="c1"></i><i class="c2"></i><i class="c3"></i></div>
     <div class="tint"></div>
+    <div class="lum" id="lum"></div>
     <div class="vig"></div>
     <div class="hitflash" id="hitflash"></div>
     <div class="toasts" id="toasts"></div>
@@ -883,7 +856,6 @@ text.lbl{transition:opacity .35s}
   </div>
 </div>
 
-<!-- мобильная телеметрия -->
 <div class="mstats" id="mstats">
   <div class="mpips" id="mpips"></div>
   <div class="mrow">
@@ -936,12 +908,13 @@ const stage=$('stage'),units=$('units'),fx=$('fx'),road=$('road'),mapBox=$('mapB
 const kvG=$('kv'),kvHull=$('kvHull'),kvTur=$('kvTur'),kvLead=$('kvLead'),pakG=$('pak'),pakLbl=$('pakLbl');
 const sector=$('sector'),sectorEdge=$('sectorEdge'),aimLine=$('aimLine'),reticle=$('reticle'),cratersG=$('craters');
 const briefEl=$('brief'),briefTx=$('briefText'),clockEl=$('clock'),killsEl=$('kills'),hint=$('hint');
-const scrub=$('scrub2'),tlPhase=$('tlPhase'),toasts=$('toasts'),led=$('led');
+const scrub=$('scrub2'),tlPhase=$('tlPhase'),toasts=$('toasts'),led=$('led'),logScroll=$('logScroll');
 const roadLen=road.getTotalLength();
 const N=22,END=48,AMMO=44;
 const EXT={x:-240,y:-190,w:1200,h:1380},FRAME={x:-215,y:-165,w:1150,h:1330};
 const CX=360,CY=500,PAK={x:398,y:672};
 
+/* ---- геометрия ---- */
 function lenAt(x,y){let b=0,d=1e18;for(let L=0;L<=roadLen;L+=3){const p=road.getPointAtLength(L);
   const q=(p.x-x)**2+(p.y-y)**2;if(q<d){d=q;b=L;}}return b;}
 const KILL=lenAt(255,747);
@@ -951,7 +924,21 @@ function roadAt(L,off){
   return {x:p.x+dy*(off||0),y:p.y-dx*(off||0),a:Math.atan2(dy,dx)/RAD};
 }
 
-/* сетка / рамка / ЛЭП */
+/* ---- зерно бумаги: статичная плитка, без SVG-фильтра ---- */
+(function(){
+  try{
+    const c=document.createElement('canvas');c.width=c.height=96;
+    const g=c.getContext('2d'),im=g.createImageData(96,96),d=im.data;
+    for(let i=0;i<d.length;i+=4){
+      const v=Math.random();
+      d[i]=46;d[i+1]=40;d[i+2]=26;d[i+3]=v<.55?0:Math.floor((v-.55)*150);
+    }
+    g.putImageData(im,0,0);
+    $('grain').style.backgroundImage='url('+c.toDataURL()+')';
+  }catch(e){$('grain').style.display='none';}
+})();
+
+/* ---- сетка / рамка / ЛЭП ---- */
 (function(){
   const g=$('grid');
   for(let x=-180;x<=900;x+=90)g.appendChild(mk('line',{x1:x,y1:-165,x2:x,y2:1165,stroke:'#7d7a52','stroke-width':.7,opacity:.3}));
@@ -970,7 +957,7 @@ function roadAt(L,off){
   pg.insertBefore(mk('path',{d:d,fill:'none',stroke:'#5c5638','stroke-width':.8,opacity:.65}),pg.firstChild);
 })();
 
-/* единицы */
+/* ---- единицы ---- */
 const DETOUR=[4,5,6,7],tanks=[];
 for(let i=0;i<N;i++){
   const g=mk('g',{}),body=mk('g',{}),hull=mk('g',{}),tur=mk('g',{}),x=mk('use',{href:'#tz-hit'});
@@ -980,7 +967,7 @@ for(let i=0;i<N;i++){
   tanks.push({g,body,hull,tur,x,dead:false});
 }
 
-/* хронология */
+/* ---- хронология ---- */
 const GROUPS=[
  {t:6.4,i:[0]},{t:8.2,i:[1]},{t:9.6,i:[2]},{t:12.4,i:[3,4]},{t:15.2,i:[5]},
  {t:17.8,i:[6,7]},{t:21.4,i:[8,9]},{t:24.6,i:[10]},{t:27.4,i:[11,12]},
@@ -1012,9 +999,9 @@ const RETURN=[
 ];
 
 let RATE=1.75,symScale=1.05,travK=1,fxK=1,volume=.8;
-let T=0,playing=false,raf=null,lastTs=0,hits=0,lastBrief=-1,lastKills=-1,dustAcc=0;
+let T=0,playing=false,raf=null,lastTs=0,hits=0,lastBrief=-1,lastKills=-1,dustAcc=0,mapHidden=false;
 
-/* кинематика */
+/* ---- кинематика ---- */
 function advanceAt(t){const s=KILL-110;return t<=4?s+(KILL-s)*(t/4):KILL;}
 function spacingAt(t){return t<=4?46:46+(34-46)*Math.min(1,(t-4)/9);}
 function posOf(i,t){
@@ -1064,7 +1051,7 @@ function aimOf(i,t){
 }
 function currentTarget(t){for(let j=0;j<SHOTS.length;j++){const s=SHOTS[j];if(t<s.t-.05)return s;}return null;}
 
-/* журнал и индикаторы */
+/* ---- журнал ---- */
 const logEl=$('log');
 BRIEF.forEach(b=>{
   const li=document.createElement('li');
@@ -1079,48 +1066,21 @@ for(let i=0;i<N;i++){
   const d=document.createElement('span');d.className='pip';$('pips').appendChild(d);pips.push(d);
   const m=document.createElement('i');$('mpips').appendChild(m);mpips.push(m);
 }
+/* прокрутка только внутри списка — никогда не скроллит документ */
+function scrollLogTo(li){
+  if(isMobile()&&!$('pLog').classList.contains('sheet-open'))return;
+  const br=logScroll.getBoundingClientRect(),r=li.getBoundingClientRect();
+  const top=logScroll.scrollTop+(r.top-br.top)-(logScroll.clientHeight-r.height)/2;
+  logScroll.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+}
 
-/* отрисовка */
+/* ---- отрисовка ---- */
 function render(){
   const kills=killsAt(T);
   clockEl.textContent='14:'+String(Math.floor(T)).padStart(2,'0');
   scrub.value=T;scrub.style.setProperty('--p',(T/END*100)+'%');
-  for(let i=0;i<N;i++){
-    const tk=tanks[i],dead=isDead(i,T),t=dead?DMAP[i]:T;
-    const p=posOf(i,t),h=headOf(i,t),a=aimOf(i,t);
-    tk.g.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+') scale('+symScale.toFixed(2)+')');
-    tk.hull.setAttribute('transform','rotate('+h.toFixed(1)+')');
-    tk.tur.setAttribute('transform','rotate('+a.toFixed(1)+')');
-    tk.body.style.filter=dead?'brightness(.34) saturate(.4) sepia(.5)':'';
-    tk.x.style.display=dead?'':'none';
-  }
-  const st=kvState(T),ka=kvAim(T);
-  kvG.setAttribute('transform','translate('+st.x.toFixed(1)+','+st.y.toFixed(1)+') scale('+symScale.toFixed(2)+')');
-  kvHull.setAttribute('transform','rotate('+st.a.toFixed(1)+')');
-  kvTur.setAttribute('transform','rotate('+ka.toFixed(1)+')');
-  kvG.style.opacity=T>46.5?String(1-.3*Math.min(1,(T-46.5)/1.5)):'1';
-  kvLead.setAttribute('d','M'+(st.x-18*symScale).toFixed(1)+','+(st.y-14*symScale).toFixed(1)+'L64,646');
 
-  const R=215,a1=(ka-13)*RAD,a2=(ka+13)*RAD;
-  const p1x=st.x+Math.cos(a1)*R,p1y=st.y+Math.sin(a1)*R,p2x=st.x+Math.cos(a2)*R,p2y=st.y+Math.sin(a2)*R;
-  const dSec='M'+st.x.toFixed(1)+','+st.y.toFixed(1)+'L'+p1x.toFixed(1)+','+p1y.toFixed(1)+
-    'A'+R+','+R+' 0 0 1 '+p2x.toFixed(1)+','+p2y.toFixed(1)+'Z';
-  sector.setAttribute('d',dSec);sectorEdge.setAttribute('d',dSec);
-  const tg=currentTarget(T),showTg=!!(tg&&T>5.2&&T<43.4);
-  const tipX=st.x+Math.cos(ka*RAD)*36*symScale,tipY=st.y+Math.sin(ka*RAD)*36*symScale;
-  if(showTg){
-    aimLine.setAttribute('x1',tipX.toFixed(1));aimLine.setAttribute('y1',tipY.toFixed(1));
-    aimLine.setAttribute('x2',tg.tx.toFixed(1));aimLine.setAttribute('y2',tg.ty.toFixed(1));
-    aimLine.style.opacity='.85';
-    reticle.setAttribute('transform','translate('+tg.tx.toFixed(1)+','+tg.ty.toFixed(1)+')');
-    reticle.style.opacity='.9';
-  }else{aimLine.style.opacity='0';reticle.style.opacity='0';}
-
-  const pakOn=T>=20.6&&T<43.6;
-  pakG.style.opacity=pakOn?'1':'0';pakLbl.style.opacity=pakOn?'1':'0';
-  if(pakOn){const pa=angTo(PAK.x,PAK.y,st.x,st.y);
-    pakG.setAttribute('transform','translate('+PAK.x+','+PAK.y+') rotate('+pa.toFixed(1)+') scale('+symScale.toFixed(2)+')');}
-
+  const st=kvState(T),ka=kvAim(T),tg=currentTarget(T),showTg=!!(tg&&T>5.2&&T<43.4);
   const az=Math.round(((ka+90)%360+360)%360)+'°';
   const tgtTxt=showTg?('Pz №'+(tg.i+1)):(T>=43.4?'бой завершён':'зона засады');
   hits=hitsAt(T);
@@ -1140,33 +1100,84 @@ function render(){
   let bi=0;for(let k=0;k<BRIEF.length;k++)if(BRIEF[k].t<=T)bi=k;
   if(bi!==lastBrief){
     lastBrief=bi;briefTx.innerHTML=BRIEF[bi].x;
-    briefEl.classList.remove('flash');void briefEl.offsetWidth;briefEl.classList.add('flash');
+    if(!mapHidden&&briefEl.animate)
+      briefEl.animate([{boxShadow:'0 0 0 2px rgba(232,180,74,.85), 0 5px 20px rgba(0,0,0,.55)'},
+        {boxShadow:'0 0 0 0 rgba(232,180,74,0), 0 5px 20px rgba(0,0,0,.55)'}],{duration:620,easing:'ease-out'});
     logItems.forEach((li,k)=>{li.classList.toggle('active',k===bi);li.classList.toggle('done',BRIEF[k].t<=T&&k!==bi);});
-    const a=logItems[bi];if(a&&a.scrollIntoView)a.scrollIntoView({block:'nearest',behavior:'smooth'});
+    scrollLogTo(logItems[bi]);
   }
   let ph=PHASES[0][1];PHASES.forEach(p=>{if(p[0]<=T)ph=p[1];});
   tlPhase.textContent=ph;
+
+  if(mapHidden)return;   /* карта под справочником не перерисовывается */
+
+  for(let i=0;i<N;i++){
+    const tk=tanks[i],dead=isDead(i,T),t=dead?DMAP[i]:T;
+    const p=posOf(i,t),h=headOf(i,t),a=aimOf(i,t);
+    tk.g.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+') scale('+symScale.toFixed(2)+')');
+    tk.hull.setAttribute('transform','rotate('+h.toFixed(1)+')');
+    tk.tur.setAttribute('transform','rotate('+a.toFixed(1)+')');
+    tk.body.style.filter=dead?'brightness(.34) saturate(.4) sepia(.5)':'';
+    tk.x.style.display=dead?'':'none';
+  }
+  kvG.setAttribute('transform','translate('+st.x.toFixed(1)+','+st.y.toFixed(1)+') scale('+symScale.toFixed(2)+')');
+  kvHull.setAttribute('transform','rotate('+st.a.toFixed(1)+')');
+  kvTur.setAttribute('transform','rotate('+ka.toFixed(1)+')');
+  kvG.style.opacity=T>46.5?String(1-.3*Math.min(1,(T-46.5)/1.5)):'1';
+  kvLead.setAttribute('d','M'+(st.x-18*symScale).toFixed(1)+','+(st.y-14*symScale).toFixed(1)+'L64,646');
+
+  const R=215,a1=(ka-13)*RAD,a2=(ka+13)*RAD;
+  const dSec='M'+st.x.toFixed(1)+','+st.y.toFixed(1)+
+    'L'+(st.x+Math.cos(a1)*R).toFixed(1)+','+(st.y+Math.sin(a1)*R).toFixed(1)+
+    'A'+R+','+R+' 0 0 1 '+(st.x+Math.cos(a2)*R).toFixed(1)+','+(st.y+Math.sin(a2)*R).toFixed(1)+'Z';
+  sector.setAttribute('d',dSec);sectorEdge.setAttribute('d',dSec);
+  if(showTg){
+    aimLine.setAttribute('x1',(st.x+Math.cos(ka*RAD)*36*symScale).toFixed(1));
+    aimLine.setAttribute('y1',(st.y+Math.sin(ka*RAD)*36*symScale).toFixed(1));
+    aimLine.setAttribute('x2',tg.tx.toFixed(1));aimLine.setAttribute('y2',tg.ty.toFixed(1));
+    aimLine.style.opacity='.85';
+    reticle.setAttribute('transform','translate('+tg.tx.toFixed(1)+','+tg.ty.toFixed(1)+')');
+    reticle.style.opacity='.9';
+  }else{aimLine.style.opacity='0';reticle.style.opacity='0';}
+
+  const pakOn=T>=20.6&&T<43.6;
+  pakG.style.opacity=pakOn?'1':'0';pakLbl.style.opacity=pakOn?'1':'0';
+  if(pakOn){const pa=angTo(PAK.x,PAK.y,st.x,st.y);
+    pakG.setAttribute('transform','translate('+PAK.x+','+PAK.y+') rotate('+pa.toFixed(1)+') scale('+symScale.toFixed(2)+')');}
 }
 
-/* эффекты */
+/* ---- эффекты (без SVG-фильтров) ---- */
 function anim(el,frames,opt){const a=el.animate(frames,opt);a.onfinish=()=>el.remove();return a;}
 function toast(txt,kind){
+  if(mapHidden)return;
   const d=document.createElement('div');d.className='toast'+(kind?' '+kind:'');d.innerHTML=txt;
   toasts.appendChild(d);
   while(toasts.children.length>(isMobile()?3:5))toasts.firstChild.remove();
   setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),340);},3000);
 }
-function shake(){mapBox.classList.remove('shake');void mapBox.offsetWidth;mapBox.classList.add('shake');}
-function flash(){const f=$('hitflash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
-function fireFX(x0,y0,tx,ty,ang){
-  const fl=mk('use',{href:'#tz-flash',transform:'translate('+x0.toFixed(1)+','+y0.toFixed(1)+') rotate('+ang.toFixed(1)+') scale('+symScale.toFixed(2)+')'});
+function flash(){
+  if(mapHidden)return;
+  const f=$('hitflash');
+  if(f.animate)f.animate([{opacity:.8},{opacity:0}],{duration:420,easing:'ease-out'});
+}
+function beam(x1,y1,x2,y2,core,halo,w,dur){
+  const g=mk('g',{}),len=Math.hypot(x2-x1,y2-y1)||1;
+  const h=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:halo,'stroke-width':w*3.2,'stroke-linecap':'round',opacity:.32});
+  const c=mk('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:core,'stroke-width':w,'stroke-linecap':'round'});
+  [h,c].forEach(l=>{l.setAttribute('stroke-dasharray',len);l.setAttribute('stroke-dashoffset',len);g.appendChild(l);});
+  fx.appendChild(g);
+  const fr=[{strokeDashoffset:len,opacity:1},{strokeDashoffset:0,opacity:1,offset:.34},{strokeDashoffset:0,opacity:0}];
+  h.animate(fr,{duration:dur,easing:'ease-out'});
+  c.animate(fr,{duration:dur,easing:'ease-out'}).onfinish=()=>g.remove();
+}
+function muzzle(x,y,ang,sc){
+  const fl=mk('use',{href:'#tz-flash',transform:'translate('+x.toFixed(1)+','+y.toFixed(1)+') rotate('+ang.toFixed(1)+') scale('+sc.toFixed(2)+')'});
   fl.style.transformBox='fill-box';fl.style.transformOrigin='left center';fx.appendChild(fl);
-  anim(fl,[{transform:'scale(.35)',opacity:1},{transform:'scale(1.35)',opacity:0}],{duration:280,easing:'ease-out'});
-  const ln=mk('line',{x1:x0,y1:y0,x2:tx,y2:ty,stroke:'#ffd27a','stroke-width':2.8,'stroke-linecap':'round',filter:'url(#glow)'});
-  const len=Math.hypot(tx-x0,ty-y0);
-  ln.setAttribute('stroke-dasharray',len);ln.setAttribute('stroke-dashoffset',len);fx.appendChild(ln);
-  anim(ln,[{strokeDashoffset:len,opacity:1},{strokeDashoffset:0,opacity:1,offset:.34},{strokeDashoffset:0,opacity:0}],
-    {duration:430,easing:'ease-out'});
+  anim(fl,[{transform:'scale(.35)',opacity:1},{transform:'scale(1.3)',opacity:0}],{duration:260,easing:'ease-out'});
+}
+function fireFX(x0,y0,tx,ty,ang){
+  muzzle(x0,y0,ang,symScale);
+  beam(x0,y0,tx,ty,'#ffe9a8','#ff9a2a',2.6,430);
   const im=mk('circle',{cx:tx,cy:ty,r:6,fill:'url(#gFlash)'});fx.appendChild(im);
   anim(im,[{r:5,opacity:1},{r:36,opacity:0}],{duration:560,easing:'ease-out'});
   const ring=mk('circle',{cx:tx,cy:ty,r:8,fill:'none',stroke:'#ffb43c','stroke-width':2});fx.appendChild(ring);
@@ -1194,11 +1205,13 @@ function wreckFX(x,y){
 }
 function ricochetFX(x,y,a){
   const g=mk('g',{transform:'translate('+x.toFixed(1)+','+y.toFixed(1)+')'});fx.appendChild(g);
+  const halo=mk('circle',{r:11,fill:'url(#gFlash)',opacity:.9});g.appendChild(halo);
+  halo.animate([{r:12,opacity:.9},{r:2,opacity:0}],{duration:300,easing:'ease-out'});
   const core=mk('circle',{r:5,fill:'#fff6d2'});g.appendChild(core);
-  anim(core,[{r:6,opacity:1},{r:1,opacity:0}],{duration:260,easing:'ease-out'});
+  core.animate([{r:6,opacity:1},{r:1,opacity:0}],{duration:260,easing:'ease-out'});
   for(let k=0;k<Math.max(3,Math.round(6*fxK));k++){
     const ang=(a+180+(Math.random()-.5)*150)*RAD,d=16+Math.random()*26;
-    const sp=mk('line',{x1:0,y1:0,x2:Math.cos(ang)*d,y2:Math.sin(ang)*d,stroke:'#ffe9a8','stroke-width':1.8,'stroke-linecap':'round',filter:'url(#glow)'});
+    const sp=mk('line',{x1:0,y1:0,x2:Math.cos(ang)*d,y2:Math.sin(ang)*d,stroke:'#ffe9a8','stroke-width':1.8,'stroke-linecap':'round'});
     g.appendChild(sp);sp.animate([{opacity:1},{opacity:0}],{duration:300+Math.random()*200,easing:'ease-out'});
   }
   const defl=mk('line',{x1:0,y1:0,x2:Math.cos((a+150)*RAD)*46,y2:Math.sin((a+150)*RAD)*46,
@@ -1216,11 +1229,13 @@ function dustFX(x,y){
   anim(c,[{transform:'scale(.5) translate(0,0)',opacity:.5},{transform:'scale(2.2) translate(-6px,-8px)',opacity:0}],
     {duration:900+Math.random()*500,easing:'ease-out'});
 }
-function craterFX(x,y){
+function craterFX(x,y,burst){
   const g=mk('g',{transform:'translate('+x+','+y+')'});cratersG.appendChild(g);
   g.appendChild(mk('use',{href:'#tz-crater'}));
-  const b=mk('circle',{cx:x,cy:y,r:6,fill:'#8a7a55',opacity:.8});fx.appendChild(b);
-  anim(b,[{r:6,opacity:.85},{r:30,opacity:0}],{duration:620,easing:'ease-out'});
+  if(burst){
+    const b=mk('circle',{cx:x,cy:y,r:6,fill:'#8a7a55',opacity:.8});fx.appendChild(b);
+    anim(b,[{r:6,opacity:.85},{r:30,opacity:0}],{duration:620,easing:'ease-out'});
+  }
 }
 function aliveSrc(pref,t){
   if(typeof pref==='number'&&!isDead(pref,t))return pref;
@@ -1232,25 +1247,21 @@ function doReturn(r){
   if(r.src==='pak'){sx=PAK.x;sy=PAK.y;heavy=true;}
   else{const i=aliveSrc(r.src,r.t);if(i===null)return;const p=posOf(i,r.t);sx=p.x;sy=p.y;}
   const a=angTo(sx,sy,st.x,st.y);
-  const tipX=sx+Math.cos(a*RAD)*24*symScale,tipY=sy+Math.sin(a*RAD)*24*symScale;
-  const fl=mk('use',{href:'#tz-flash',transform:'translate('+tipX.toFixed(1)+','+tipY.toFixed(1)+') rotate('+a.toFixed(1)+') scale(.7)'});
-  fl.style.transformBox='fill-box';fl.style.transformOrigin='left center';fx.appendChild(fl);
-  anim(fl,[{transform:'scale(.3)',opacity:.95},{transform:'scale(1.05)',opacity:0}],{duration:240,easing:'ease-out'});
   sfxEnemyShot(heavy);
+  if(mapHidden)return;
+  const tipX=sx+Math.cos(a*RAD)*24*symScale,tipY=sy+Math.sin(a*RAD)*24*symScale;
+  muzzle(tipX,tipY,a,.7);
   let ex,ey;
   if(r.miss){ex=r.miss[0];ey=r.miss[1];}else{ex=st.x-Math.cos(a*RAD)*20*symScale;ey=st.y-Math.sin(a*RAD)*20*symScale;}
-  const ln=mk('line',{x1:tipX,y1:tipY,x2:ex,y2:ey,stroke:'#9fe6d6','stroke-width':2,'stroke-linecap':'round',filter:'url(#glow)'});
-  const len=Math.hypot(ex-tipX,ey-tipY);
-  ln.setAttribute('stroke-dasharray',len);ln.setAttribute('stroke-dashoffset',len);fx.appendChild(ln);
-  anim(ln,[{strokeDashoffset:len,opacity:1},{strokeDashoffset:0,opacity:1,offset:.4},{strokeDashoffset:0,opacity:0}],
-    {duration:400,easing:'ease-out'});
+  beam(tipX,tipY,ex,ey,'#d8fff2','#4c9a8f',2,400);
   setTimeout(()=>{
-    if(r.miss){craterFX(ex,ey);sfxThud();}
+    if(mapHidden)return;
+    if(r.miss){craterFX(ex,ey,true);sfxThud();}
     else{ricochetFX(ex,ey,a);sfxPing();if(hitsAt(T)%4===0)toast('<b>Рикошет</b> · броня КВ держит','ric');}
   },230);
 }
 
-/* ---------- звук: синтез WebAudio ---------- */
+/* ---- звук ---- */
 let ctx=null,master=null,verb=null,verbGain=null,ambGain=null,noise=null,soundOn=true,audioReady=false;
 function makeNoise(sec,decay){
   const n=Math.floor(ctx.sampleRate*sec),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);
@@ -1287,48 +1298,46 @@ function ambState(){
   ambGain.gain.cancelScheduledValues(ctx.currentTime);
   ambGain.gain.linearRampToValueAtTime(playing?.06:0,ctx.currentTime+.5);
 }
-function burst(t0,buf,rate,type,freq,q,peak,dur,send){
-  const s=ctx.createBufferSource();s.buffer=buf;s.playbackRate.value=rate;
+function burst(t0,rate,type,freq,q,peak,dur){
+  const s=ctx.createBufferSource();s.buffer=noise;s.playbackRate.value=rate;
   const f=ctx.createBiquadFilter();f.type=type;f.frequency.value=freq;if(q)f.Q.value=q;
   const g=ctx.createGain();
   g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(peak,t0+.006);
   g.gain.exponentialRampToValueAtTime(.0006,t0+dur);
-  s.connect(f);f.connect(g);g.connect(master);if(send)g.connect(verb);
+  s.connect(f);f.connect(g);g.connect(master);g.connect(verb);
   s.start(t0);s.stop(t0+dur+.05);
 }
-function tone(t0,type,f0,f1,peak,dur,send){
+function tone(t0,type,f0,f1,peak,dur,wet){
   const o=ctx.createOscillator();o.type=type;
   o.frequency.setValueAtTime(f0,t0);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t0+dur*.9);
   const g=ctx.createGain();g.gain.setValueAtTime(peak,t0);g.gain.exponentialRampToValueAtTime(.0008,t0+dur);
-  o.connect(g);g.connect(master);if(send)g.connect(verb);
+  o.connect(g);g.connect(master);if(wet)g.connect(verb);
   o.start(t0);o.stop(t0+dur+.05);
 }
-/* выстрел КВ-1 — сухой, punchy */
 function sfxShot(){
   if(!audioReady||!soundOn)return;const t0=ctx.currentTime;
-  burst(t0,noise,1.05,'highpass',1500,0,.34,.11,true);
-  burst(t0,noise,.9,'lowpass',1100,0,.5,.46,true);
+  burst(t0,1.05,'highpass',1500,0,.34,.11);
+  burst(t0,.9,'lowpass',1100,0,.5,.46);
   tone(t0,'sine',132,44,.46,.4,true);
 }
-/* выстрел противника — тяжёлый, с раскатом по полю */
 function sfxEnemyShot(heavy){
   if(!audioReady||!soundOn)return;const t0=ctx.currentTime,k=heavy?1:.86;
-  burst(t0,noise,1.25,'highpass',2100,0,.42*k,.075,true);           /* резкий щелчок */
-  burst(t0,noise,.62,'lowpass',620,.9,.72*k,.62,true);              /* тело выстрела */
-  burst(t0+.012,noise,.42,'bandpass',260,1.2,.5*k,.85,true);        /* низкий раскат */
-  tone(t0,'sine',108*k,30,.62*k,.55,true);                          /* суб-удар */
-  tone(t0+.008,'triangle',210*k,52,.24*k,.34,true);                 /* гул ствола */
-  burst(t0+.13,noise,.34,'lowpass',430,0,.24*k,1.05,true);          /* эхо по местности */
+  burst(t0,1.25,'highpass',2100,0,.42*k,.075);
+  burst(t0,.62,'lowpass',620,.9,.72*k,.62);
+  burst(t0+.012,.42,'bandpass',260,1.2,.5*k,.85);
+  tone(t0,'sine',108*k,30,.62*k,.55,true);
+  tone(t0+.008,'triangle',210*k,52,.24*k,.34,true);
+  burst(t0+.13,.34,'lowpass',430,0,.24*k,1.05);
 }
 function sfxPing(){
   if(!audioReady||!soundOn)return;const t0=ctx.currentTime;
   tone(t0,'triangle',2900,760,.2,.2,true);
   tone(t0+.005,'square',4300,1500,.07,.13,false);
-  burst(t0,noise,1.6,'bandpass',3200,3,.16,.1,true);
+  burst(t0,1.6,'bandpass',3200,3,.16,.1);
 }
 function sfxThud(){
   if(!audioReady||!soundOn)return;const t0=ctx.currentTime;
-  burst(t0,noise,.42,'lowpass',300,0,.46,.6,true);
+  burst(t0,.42,'lowpass',300,0,.46,.6);
   tone(t0,'sine',86,28,.4,.5,true);
 }
 function setSound(on){
@@ -1339,20 +1348,23 @@ function setSound(on){
 }
 $('sndBtn').addEventListener('click',()=>{initAudio();resumeAudio();setSound(!soundOn);});
 
-/* события */
+/* ---- события ---- */
 function checkEvents(prev,now){
   SHOTS.forEach(s=>{
     if(prev<s.t&&s.t<=now){
-      const st=kvState(s.t),ka=kvAim(s.t),p=posOf(s.i,s.t);
-      fireFX(st.x+Math.cos(ka*RAD)*36*symScale,st.y+Math.sin(ka*RAD)*36*symScale,p.x,p.y,ka);
-      wreckFX(p.x,p.y);tanks[s.i].dead=true;shake();flash();sfxShot();
+      tanks[s.i].dead=true;sfxShot();
       if(isMobile()&&navigator.vibrate)navigator.vibrate(12);
+      if(!mapHidden){
+        const st=kvState(s.t),ka=kvAim(s.t),p=posOf(s.i,s.t);
+        fireFX(st.x+Math.cos(ka*RAD)*36*symScale,st.y+Math.sin(ka*RAD)*36*symScale,p.x,p.y,ka);
+        wreckFX(p.x,p.y);flash();
+      }
       toast('<b>14:'+String(Math.floor(s.t)).padStart(2,'0')+'</b> Pz.Kpfw.35(t) №'+(s.i+1)+' подбит');
       if(killsAt(now)===N)toast('<b>Итог</b> · колонна уничтожена: 22 танка','end');
     }
   });
   RETURN.forEach(r=>{if(prev<r.t&&r.t<=now)doReturn(r);});
-  if(now<4.4&&fxK>.05){
+  if(!mapHidden&&now<4.4&&fxK>.05){
     dustAcc+=now-prev;
     while(dustAcc>.16){dustAcc-=.16;
       const i=Math.floor(Math.random()*N),p=posOf(i,now);
@@ -1360,7 +1372,7 @@ function checkEvents(prev,now){
   }
 }
 
-/* воспроизведение */
+/* ---- воспроизведение ---- */
 const bPlay=$('bPlay'),playIco=$('playIco'),playTx=$('playTx');
 function setPlayUI(){
   playIco.textContent=playing?'⏸':'▶';bPlay.classList.toggle('playing',playing);
@@ -1384,8 +1396,8 @@ function pause(){playing=false;if(raf)cancelAnimationFrame(raf);raf=null;setPlay
 function rebuild(){
   fx.innerHTML='';cratersG.innerHTML='';toasts.innerHTML='';lastKills=-1;
   tanks.forEach(tk=>{tk.dead=false;tk.x.style.display='none';tk.body.style.filter='';});
-  SHOTS.forEach(s=>{if(s.t<=T){const p=posOf(s.i,s.t);tanks[s.i].dead=true;wreckFX(p.x,p.y);}});
-  RETURN.forEach(r=>{if(r.t<=T&&r.miss)craterFX(r.miss[0],r.miss[1]);});
+  SHOTS.forEach(s=>{if(s.t<=T){const p=posOf(s.i,s.t);tanks[s.i].dead=true;if(!mapHidden)wreckFX(p.x,p.y);}});
+  RETURN.forEach(r=>{if(r.t<=T&&r.miss&&!mapHidden)craterFX(r.miss[0],r.miss[1],false);});
 }
 function reset(){pause();T=0;lastBrief=-1;dustAcc=0;rebuild();render();hint.classList.remove('hidden');}
 function seek(v){T=clamp(parseFloat(v),0,END);if(T>0)hint.classList.add('hidden');lastBrief=-1;rebuild();render();}
@@ -1399,9 +1411,14 @@ scrub.addEventListener('input',e=>{pause();seek(e.target.value);});
 [].slice.call(document.querySelectorAll('.sp')).forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.sp').forEach(x=>x.classList.remove('on'));b.classList.add('on');RATE=parseFloat(b.dataset.r);}));
 
-/* вид */
+/* ---- камера: кэш геометрии, без чтения layout в кадре ---- */
 let view={x:EXT.x,y:EXT.y,w:EXT.w,h:EXT.h},userView=false,focusMode=false,tw=null;
-const ar=()=>{const r=stage.getBoundingClientRect();return (r.width||1)/(r.height||1);};
+let rect={w:1,h:1,left:0,top:0};
+function measure(){
+  const r=stage.getBoundingClientRect();
+  rect={w:r.width||1,h:r.height||1,left:r.left,top:r.top};
+}
+const ar=()=>rect.w/rect.h;
 function applyView(){stage.setAttribute('viewBox',view.x.toFixed(2)+' '+view.y.toFixed(2)+' '+view.w.toFixed(2)+' '+view.h.toFixed(2));}
 function makeView(cx,cy,w){const h=w/ar();return {x:cx-w/2,y:cy-h/2,w:w,h:h};}
 function clampView(v,strict){
@@ -1415,11 +1432,11 @@ function clampView(v,strict){
   return v;
 }
 function tweenView(tg,dur){
-  dur=dur||480;const f={x:view.x,y:view.y,w:view.w},t0=performance.now();
+  dur=dur||460;const f={x:view.x,y:view.y,w:view.w},t0=performance.now(),a=ar();
   if(tw)cancelAnimationFrame(tw);
   (function s(now){
     const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);
-    view={x:lerp(f.x,tg.x,e),y:lerp(f.y,tg.y,e),w:lerp(f.w,tg.w,e)};view.h=view.w/ar();applyView();
+    view={x:lerp(f.x,tg.x,e),y:lerp(f.y,tg.y,e),w:lerp(f.w,tg.w,e)};view.h=view.w/a;applyView();
     if(k<1)tw=requestAnimationFrame(s);else tw=null;
   })(t0);
 }
@@ -1439,20 +1456,35 @@ function goFocus(){
 }
 function zoomBy(k){
   const cx=view.x+view.w/2,cy=view.y+view.h/2;
-  const t=clampView(makeView(cx,cy,view.w*k),false);
-  tweenView(t,240);userView=true;focusMode=false;$('bZoom').classList.remove('on');
+  tweenView(clampView(makeView(cx,cy,view.w*k),false),240);
+  userView=true;focusMode=false;$('bZoom').classList.remove('on');
 }
 $('bZoom').addEventListener('click',()=>{focusMode?goAll(true):goFocus();});
 $('zIn').addEventListener('click',()=>zoomBy(.72));
 $('zOut').addEventListener('click',()=>zoomBy(1.38));
 $('zFit').addEventListener('click',()=>goAll(true));
 $('bAll').addEventListener('click',()=>{goAll(true);if(isMobile())closeSheets();});
-window.addEventListener('resize',()=>{view.h=view.w/ar();if(!userView)goFill(false);else applyView();if(!isMobile())closeSheets();});
 
-/* панорама / масштаб */
+/* resize: без авто-перецентровки от скрытия адресной строки */
+let rzRaf=null,lastW=0;
+function onResize(){
+  if(rzRaf)cancelAnimationFrame(rzRaf);
+  rzRaf=requestAnimationFrame(()=>{
+    rzRaf=null;
+    const prevW=rect.w;measure();
+    view.h=view.w/ar();
+    if(!userView&&Math.abs(rect.w-prevW)>2)goFill(false);else applyView();
+    if(!isMobile())closeSheets();
+  });
+}
+window.addEventListener('resize',onResize);
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{measure();userView=false;goFill(false);},260);});
+if(window.ResizeObserver){new ResizeObserver(onResize).observe(mapBox);}
+
+/* ---- панорама / масштаб ---- */
 const ptrs=new Map();let pan=null,pinch=null,panMoved=0,lastTap=0,lastTapX=0,lastTapY=0;
 stage.addEventListener('pointerdown',e=>{
-  initAudio();resumeAudio();
+  initAudio();resumeAudio();measure();
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(ptrs.size===1){pan={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};panMoved=0;
     try{stage.setPointerCapture(e.pointerId);}catch(err){}stage.classList.add('grabbing');}
@@ -1461,18 +1493,18 @@ stage.addEventListener('pointerdown',e=>{
 });
 stage.addEventListener('pointermove',e=>{
   if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  const r=stage.getBoundingClientRect(),a=ar();
+  const a=ar();
   if(pinch&&ptrs.size>=2){
     const p=[...ptrs.values()],nd=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)||1;
     const w=clamp(pinch.w*pinch.d/nd,180,2600),h=w/a;
-    const mx=pinch.vx+(pinch.cx-r.left)/r.width*pinch.w,my=pinch.vy+(pinch.cy-r.top)/r.height*(pinch.w/a);
+    const mx=pinch.vx+(pinch.cx-rect.left)/rect.w*pinch.w,my=pinch.vy+(pinch.cy-rect.top)/rect.h*(pinch.w/a);
     view=clampView({x:mx-(mx-pinch.vx)*(w/pinch.w),y:my-(my-pinch.vy)*(w/pinch.w),w:w,h:h},false);
     applyView();userView=true;focusMode=false;$('bZoom').classList.remove('on');panMoved=99;return;
   }
   if(!pan)return;
   const ddx=e.clientX-pan.x,ddy=e.clientY-pan.y;
   panMoved=Math.max(panMoved,Math.hypot(ddx,ddy));
-  view=clampView({x:pan.vx-ddx*view.w/r.width,y:pan.vy-ddy*view.h/r.height,w:view.w,h:view.h},false);
+  view=clampView({x:pan.vx-ddx*view.w/rect.w,y:pan.vy-ddy*view.h/rect.h,w:view.w,h:view.h},false);
   applyView();userView=true;
 });
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,e=>{
@@ -1491,15 +1523,15 @@ stage.addEventListener('pointermove',e=>{
   }
 }));
 stage.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const r=stage.getBoundingClientRect(),a=ar(),k=e.deltaY<0?.85:1.18;
-  const mx=view.x+(e.clientX-r.left)/r.width*view.w,my=view.y+(e.clientY-r.top)/r.height*view.h;
+  e.preventDefault();measure();
+  const a=ar(),k=e.deltaY<0?.85:1.18;
+  const mx=view.x+(e.clientX-rect.left)/rect.w*view.w,my=view.y+(e.clientY-rect.top)/rect.h*view.h;
   const w=clamp(view.w*k,180,2600),h=w/a;
   view=clampView({x:mx-(mx-view.x)*(w/view.w),y:my-(my-view.y)*(w/view.w),w:w,h:h},false);
   applyView();userView=true;focusMode=false;$('bZoom').classList.remove('on');
 },{passive:false});
 
-/* листы (телефон) */
+/* ---- листы: карта под ними полностью останавливается ---- */
 const bd=$('backdrop'),mtabs=$('mtabs');
 function openSheet(id){
   if(!isMobile())return;
@@ -1508,15 +1540,24 @@ function openSheet(id){
   p.insertBefore(mtabs,p.children[1]||null);
   mtabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
   p.classList.add('sheet-open');bd.classList.add('show');
+  if(!mapHidden){mapHidden=true;mapBox.classList.add('noshow');}
 }
-function closeSheets(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('sheet-open'));bd.classList.remove('show');}
+function closeSheets(){
+  const wasOpen=document.querySelector('.panel.sheet-open');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('sheet-open'));
+  bd.classList.remove('show');
+  if(mapHidden){
+    mapHidden=false;mapBox.classList.remove('noshow');
+    measure();rebuild();render();
+  }else if(wasOpen){measure();}
+}
 mtabs.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>openSheet(b.dataset.tab)));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeSheets));
 bd.addEventListener('click',closeSheets);
 $('bLeg2').addEventListener('click',()=>{if(isMobile())openSheet('pLeg');
-  else $('pLeg').animate([{boxShadow:'0 0 0 2px rgba(232,180,74,.85)'},{boxShadow:'0 5px 20px rgba(0,0,0,.45)'}],{duration:900});});
+  else if($('pLeg').animate)$('pLeg').animate([{boxShadow:'0 0 0 2px rgba(232,180,74,.85)'},{boxShadow:'0 5px 20px rgba(0,0,0,.45)'}],{duration:900});});
 $('bView2').addEventListener('click',()=>{if(isMobile())openSheet('pView');
-  else $('pView').animate([{boxShadow:'0 0 0 2px rgba(232,180,74,.85)'},{boxShadow:'0 5px 20px rgba(0,0,0,.45)'}],{duration:900});});
+  else if($('pView').animate)$('pView').animate([{boxShadow:'0 0 0 2px rgba(232,180,74,.85)'},{boxShadow:'0 5px 20px rgba(0,0,0,.45)'}],{duration:900});});
 briefEl.addEventListener('click',()=>{if(isMobile())openSheet('pLog');});
 document.querySelectorAll('.panel-b').forEach(b=>{
   let sy=null;
@@ -1524,7 +1565,7 @@ document.querySelectorAll('.panel-b').forEach(b=>{
   b.addEventListener('touchmove',e=>{if(sy!==null&&e.touches[0].clientY-sy>80&&b.scrollTop<=0)closeSheets();},{passive:true});
 });
 
-/* живые настройки */
+/* ---- живые настройки ---- */
 function bindRange(id,vid,fmt,fn){
   const el=$(id),out=$(vid);
   const upd=()=>{const v=parseFloat(el.value);
@@ -1535,17 +1576,22 @@ function bindRange(id,vid,fmt,fn){
 bindRange('rScale','vScale',v=>v.toFixed(2),v=>{symScale=v;});
 bindRange('rTrav','vTrav',v=>v.toFixed(1)+'×',v=>{travK=v;});
 bindRange('rFx','vFx',v=>Math.round(v*100)+'%',v=>{fxK=v;stage.style.setProperty('--wo',String(clamp(v,.12,1)));});
-bindRange('rLum','vLum',v=>Math.round(v*100)+'%',v=>{mapBox.style.setProperty('--lum',String(v));});
+bindRange('rLum','vLum',v=>Math.round(v*100)+'%',v=>{
+  const l=$('lum');
+  if(v<1){l.style.background='#0b0d06';l.style.opacity=String((1-v)*.85);}
+  else{l.style.background='#fff8e0';l.style.opacity=String((v-1)*.55);}
+});
 bindRange('rVol','vVol',v=>Math.round(v*100)+'%',v=>{volume=v;
   if(audioReady&&soundOn){master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.linearRampToValueAtTime(v,ctx.currentTime+.12);}});
-function bindSw(id,cls){
+function bindSw(id,cls,fn){
   const el=$(id);
   el.addEventListener('click',()=>{const on=!el.classList.contains('on');el.classList.toggle('on',on);
-    if(cls)stage.classList.toggle(cls,!on);});
+    if(cls)stage.classList.toggle(cls,!on);if(fn)fn(on);});
 }
 bindSw('tCont','hide-cont');bindSw('tGrid','hide-grid');bindSw('tLbl','hide-lbl');
-bindSw('tSmoke','hide-smoke');bindSw('tCloud','hide-clouds');bindSw('tAim','hide-aim');
+bindSw('tSmoke','hide-smoke');bindSw('tAim','hide-aim');
+bindSw('tCloud',null,on=>$('clouds').classList.toggle('off',!on));
 document.querySelectorAll('#segTheme button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('#segTheme button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');mapBox.dataset.theme=b.dataset.th;
@@ -1555,11 +1601,11 @@ $('bDef').addEventListener('click',()=>{
   Object.keys(defs).forEach(id=>{$(id).value=defs[id];$(id).dispatchEvent(new Event('input'));});
   ['tCont','tGrid','tLbl','tSmoke','tCloud','tAim'].forEach(id=>{const el=$(id);if(!el.classList.contains('on'))el.click();});
   document.querySelector('#segTheme button[data-th="dusk"]').click();
-  userView=false;goFill(true);
+  userView=false;measure();goFill(true);
   toast('<b>Вид</b> · настройки сброшены','end');
 });
 
-/* клавиатура */
+/* ---- клавиатура ---- */
 window.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT')return;
   initAudio();resumeAudio();
@@ -1574,10 +1620,11 @@ window.addEventListener('keydown',e=>{
   else if(e.key==='Escape')closeSheets();
 });
 document.addEventListener('pointerdown',()=>{initAudio();resumeAudio();},{once:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)pause();});
 
-/* старт */
-render();setPlayUI();setSound(true);
-requestAnimationFrame(()=>{goFill(false);render();});
+/* ---- старт ---- */
+measure();render();setPlayUI();setSound(true);
+requestAnimationFrame(()=>{measure();goFill(false);render();});
 })();
 </script>
 </body>
